@@ -12,7 +12,7 @@ module.exports = {
     groups: [{
       masterPackageName: "demo-tests",
       changelogPath: ".",
-      include: [".", "filter-queries"]
+      include: ["", "filter-queries"]
     }],
     customRenderers: {
       renderEntry: (entry) => `- ${entry.comment}`,

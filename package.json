@@ -14,10 +14,11 @@
     "postinstall": "patch-package --patch-dir .patch/patches"
   },
   "devDependencies": {
-    "beachball": "^2.33.2",
+    "beachball": "2.33.2",
     "patch-package": "^7.0.0"
   },
   "workspaces": [
+    ".",
     "filter-queries"
   ]
 }
