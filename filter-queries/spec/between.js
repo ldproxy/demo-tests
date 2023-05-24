@@ -32,7 +32,9 @@ describe(
         filter: (f) => {
           const zi037Rel = f.properties.ZI037_REL;
           return (
-            zi037Rel !== null && zi037Rel >= zi037Rel && zi037Rel <= zi037Rel
+            typeof zi037Rel === "number" &&
+            zi037Rel >= zi037Rel &&
+            zi037Rel <= zi037Rel
           );
         },
       },
@@ -44,35 +46,43 @@ describe(
         query: { filter: "ZI037_REL BeTweeN 0 AnD 10" },
         filter: (f) => {
           const zi037Rel = f.properties.ZI037_REL;
-          return zi037Rel !== null && zi037Rel >= 0 && zi037Rel <= 10;
+          return (
+            typeof zi037Rel === "number" && zi037Rel >= 0 && zi037Rel <= 10
+          );
         },
       },
       {
         query: { filter: "ZI037_REL BeTweeN 0 AnD 11" },
         filter: (f) => {
           const zi037Rel = f.properties.ZI037_REL;
-          return zi037Rel !== null && zi037Rel >= 0 && zi037Rel <= 11;
+          return (
+            typeof zi037Rel === "number" && zi037Rel >= 0 && zi037Rel <= 11
+          );
         },
       },
       {
         query: { filter: "ZI037_REL NoT BeTweeN 0 AnD 10" },
         filter: (f) => {
           const zi037Rel = f.properties.ZI037_REL;
-          return zi037Rel !== null && !(zi037Rel >= 0 && zi037Rel <= 10);
+          return (
+            typeof zi037Rel === "number" && !(zi037Rel >= 0 && zi037Rel <= 10)
+          );
         },
       },
       {
         query: { filter: "ZI037_REL NoT BeTweeN 0 AnD 11" },
         filter: (f) => {
           const zi037Rel = f.properties.ZI037_REL;
-          return zi037Rel !== null && !(zi037Rel >= 0 && zi037Rel <= 11);
+          return (
+            typeof zi037Rel === "number" && !(zi037Rel >= 0 && zi037Rel <= 11)
+          );
         },
       },
       {
         query: { filter: "6 BeTweeN 0 AnD ZI037_REL" },
         filter: (f) => {
           const zi037Rel = f.properties.ZI037_REL;
-          return zi037Rel !== null && zi037Rel <= 6;
+          return typeof zi037Rel === "number" && zi037Rel >= 6;
         },
       },
     ];

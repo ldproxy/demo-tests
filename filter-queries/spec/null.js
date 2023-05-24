@@ -29,11 +29,11 @@ describe(
     const tests = [
       {
         query: { filter: "ZI037_REL iS NulL" },
-        filter: (f) => f.properties.ZI037_REL === null,
+        filter: (f) => f.properties.ZI037_REL === undefined,
       },
       {
         query: { filter: "ZI037_REL iS not NulL" },
-        filter: (f) => f.properties.ZI037_REL !== null,
+        filter: (f) => f.properties.ZI037_REL !== undefined,
       },
     ];
 
