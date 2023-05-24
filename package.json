@@ -1,0 +1,15 @@
+{
+  "name": "demo-tests",
+  "version": "0.9.0",
+  "license": "MIT",
+  "author": "interactive instruments GmbH",
+  "repository": "https://github.com/ldproxy/demo-tests.git",
+  "private": true,
+  "scripts": {
+    "all": "npm run test --workspaces",
+    "filter-queries": "npm run test --workspace=filter-queries"
+  },
+  "workspaces": [
+    "filter-queries"
+  ]
+}
