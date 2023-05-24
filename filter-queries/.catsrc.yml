@@ -1,0 +1,9 @@
+api: "https://demo.ldproxy.net/daraa"
+protocol:
+  plugin: "@catsjs/http"
+  defaults:
+    accept: "application/geo+json, application/problem+json;q=0.8"
+contentTypes:
+  - "@catsjs/json"
+verbose: false
+description: Validates the correct implementation of filters for the [Daraa API](https://demo.ldproxy.net/daraa) and [CShapes API](https://demo.ldproxy.net/cshapes).

@@ -1,0 +1,17 @@
+{
+  "name": "filter-queries",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies": {
+    "@catsjs/core": "^1.0.0-beta.6",
+    "@catsjs/http": "^1.0.0-beta.6",
+    "@catsjs/json": "^1.0.0-beta.6",
+    "@catsjs/report": "^1.0.0-beta.6",
+    "mocha": "^10.2.0",
+    "qs": "^6.11.2"
+  }
+}
