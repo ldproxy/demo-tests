@@ -1,0 +1,65 @@
+diff --git a/node_modules/beachball/lib/bump/bumpPackageInfoVersion.js b/node_modules/beachball/lib/bump/bumpPackageInfoVersion.js
+index ae996df..79213fb 100644
+--- a/node_modules/beachball/lib/bump/bumpPackageInfoVersion.js
++++ b/node_modules/beachball/lib/bump/bumpPackageInfoVersion.js
+@@ -18,9 +18,9 @@ function bumpPackageInfoVersion(pkgName, bumpInfo, options) {
+     else if (changeType === 'none') {
+         console.log(`"${pkgName}" has a "none" change type, no version bump is required.`);
+     }
+-    else if (info.private) {
+-        console.log(`Skipping bumping private package "${pkgName}"`);
+-    }
++//    else if (info.private) {
++//        console.log(`Skipping bumping private package "${pkgName}"`);
++//    }
+     else {
+         // Version should be updated
+         info.version = semver_1.default.inc(info.version, options.prereleasePrefix ? 'prerelease' : changeType, options.prereleasePrefix || undefined);
+diff --git a/node_modules/beachball/lib/bump/performBump.js b/node_modules/beachball/lib/bump/performBump.js
+index 78ab415..05d0511 100644
+--- a/node_modules/beachball/lib/bump/performBump.js
++++ b/node_modules/beachball/lib/bump/performBump.js
+@@ -18,9 +18,9 @@ function writePackageJson(modifiedPackages, packageInfos) {
+             continue;
+         }
+         const packageJson = fs_extra_1.default.readJSONSync(info.packageJsonPath);
+-        if (!info.private) {
++//        if (!info.private) {
+             packageJson.version = info.version;
+-        }
++//        }
+         for (const depKind of ['dependencies', 'devDependencies', 'peerDependencies']) {
+             // updatedDeps contains all of the dependencies in the bump info since the beginning of a build job
+             const updatedDepsVersions = info[depKind];
+diff --git a/node_modules/beachball/lib/changelog/writeChangelog.js b/node_modules/beachball/lib/changelog/writeChangelog.js
+index d9b8c25..b538ff8 100644
+--- a/node_modules/beachball/lib/changelog/writeChangelog.js
++++ b/node_modules/beachball/lib/changelog/writeChangelog.js
+@@ -13,6 +13,7 @@ const isPathIncluded_1 = require("../monorepo/isPathIncluded");
+ const mergeChangelogs_1 = require("./mergeChangelogs");
+ async function writeChangelog(options, changeFileChangeInfos, calculatedChangeTypes, dependentChangedBy, packageInfos) {
+     const groupedChangelogPaths = await writeGroupedChangelog(options, changeFileChangeInfos, calculatedChangeTypes, packageInfos);
++return;
+     const groupedChangelogPathSet = new Set(groupedChangelogPaths);
+     const changelogs = getPackageChangelogs_1.getPackageChangelogs(changeFileChangeInfos, calculatedChangeTypes, dependentChangedBy, packageInfos, options.path);
+     // Use a standard for loop here to prevent potentially firing off multiple network requests at once
+diff --git a/node_modules/beachball/lib/validation/isValidGroupOptions.js b/node_modules/beachball/lib/validation/isValidGroupOptions.js
+index 09d0595..e4525e3 100644
+--- a/node_modules/beachball/lib/validation/isValidGroupOptions.js
++++ b/node_modules/beachball/lib/validation/isValidGroupOptions.js
+@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.isValidGroupedPackageOptions = exports.isValidGroupOptions = void 0;
+ const format_1 = require("../logging/format");
+ function isValidGroupOptions(groups) {
++console.log('VG');
+     // Values that violate types could happen in a user-provided object
+     if (!Array.isArray(groups)) {
+         console.error('ERROR: Expected "groups" configuration setting to be an array. Received:\n' + JSON.stringify(groups));
+@@ -14,6 +15,7 @@ function isValidGroupOptions(groups) {
+             badGroups.map(group => '  ' + format_1.singleLineStringify(group)).join('\n'));
+         return false;
+     }
++    return true;
+ }
+ exports.isValidGroupOptions = isValidGroupOptions;
+ /** Validate per-package beachball options are valid for packages in groups */
