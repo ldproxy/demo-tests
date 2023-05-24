@@ -17,9 +17,9 @@ if [ "$CI_WORKSPACE" != "" ]; then
   export CATS_REPORT_DIR="$CI_WORKSPACE/$REPORT_DIR"
 fi
 
-if [ "$PLUGIN_FILTER" = "true" ]; then
+if ["$FILTER_QUERIES" = "true" -o "$PLUGIN_FILTER_QUERIES" = "true" ]; then
   i=$((i+1))
-  npm run filter
+  npm run filter-queries
 fi
 
 if [ "$PLUGIN_ALL" = "true" -o $i -eq 0 ]; then

@@ -6,4 +6,6 @@ RUN cd /cats && npm install
 
 WORKDIR /cats
 
+VOLUME ["/cats/filter-queries/report"]
+
 ENTRYPOINT ["/cats/woodpecker-plugin.sh"]

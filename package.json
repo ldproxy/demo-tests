@@ -6,7 +6,7 @@
   "repository": "https://github.com/ldproxy/demo-tests.git",
   "private": true,
   "scripts": {
-    "all": "npm run test --workspaces",
+    "all": "npm run test --workspaces --if-present",
     "filter-queries": "npm run test --workspace=filter-queries",
     "change": "beachball change --verbose",
     "checkchange": "beachball check --verbose",

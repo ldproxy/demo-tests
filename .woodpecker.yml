@@ -13,9 +13,14 @@ pipeline:
       repo: ghcr.io/ldproxy/demo-tests
       tags: next
       force_tag: true
+      pull_image: true
+      labels:
+        - org.opencontainers.image.source=https://github.com/ldproxy/demo-tests
+      platforms:
+        - linux/amd64
+        - linux/arm64
       username:
         from_secret: ghcr_username
       password:
         from_secret: ghcr_password
-      pull_image: true
     secrets: [ ghcr_username, ghcr_password]
