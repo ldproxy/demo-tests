@@ -1,0 +1,24 @@
+{
+  "name": "demo-tests",
+  "version": "0.9.0",
+  "license": "MIT",
+  "author": "interactive instruments GmbH",
+  "repository": "https://github.com/ldproxy/demo-tests.git",
+  "private": true,
+  "scripts": {
+    "all": "npm run test --workspaces --if-present",
+    "filter-queries": "npm run test --workspace=filter-queries",
+    "change": "beachball change --verbose",
+    "checkchange": "beachball check --verbose",
+    "bump": "beachball bump",
+    "postinstall": "patch-package --patch-dir .patch/patches"
+  },
+  "devDependencies": {
+    "beachball": "2.33.2",
+    "patch-package": "^7.0.0"
+  },
+  "workspaces": [
+    ".",
+    "filter-queries"
+  ]
+}

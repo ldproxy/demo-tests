@@ -1,4 +1,5 @@
-api: "https://demo.ldproxy.net/daraa"
+api: "https://demo.ldproxy.net"
+description: Validates the correct implementation of filters for the [Daraa API](https://demo.ldproxy.net/daraa) and [CShapes API](https://demo.ldproxy.net/cshapes).
 protocol:
   plugin: "@catsjs/http"
   defaults:
@@ -6,4 +7,3 @@ protocol:
 contentTypes:
   - "@catsjs/json"
 verbose: false
-description: Validates the correct implementation of filters for the [Daraa API](https://demo.ldproxy.net/daraa) and [CShapes API](https://demo.ldproxy.net/cshapes).

@@ -1,0 +1,26 @@
+when:
+  event: push
+
+pipeline:
+  publish:
+    #image: docker.ci.interactive-instruments.de/cicd/drone-docker-buildx
+    image: woodpeckerci/plugin-docker-buildx
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    settings:
+      registry: ghcr.io
+      repo: ghcr.io/ldproxy/demo-tests
+      tags: next
+      force_tag: true
+      pull_image: true
+      labels:
+        - org.opencontainers.image.source=https://github.com/ldproxy/demo-tests
+      platforms:
+        - linux/amd64
+        - linux/arm64
+      username:
+        from_secret: ghcr_username
+      password:
+        from_secret: ghcr_password
+    secrets: [ ghcr_username, ghcr_password]
