@@ -5,6 +5,9 @@ REPORT_DIR="reports"
 
 # TODO: cats reportDir and reportFilename
 
+if [ "$API" != "" ]; then
+  export CATS_API="$API"
+fi
 if [ "$PLUGIN_API" != "" ]; then
   export CATS_API="$PLUGIN_API"
 fi
@@ -17,7 +20,7 @@ if [ "$CI_WORKSPACE" != "" ]; then
   export CATS_REPORT_DIR="$CI_WORKSPACE/$REPORT_DIR"
 fi
 
-if ["$FILTER_QUERIES" = "true" -o "$PLUGIN_FILTER_QUERIES" = "true" ]; then
+if [ "$FILTER_QUERIES" = "true" -o "$PLUGIN_FILTER_QUERIES" = "true" ]; then
   i=$((i+1))
   npm run filter-queries
 fi

@@ -2,7 +2,7 @@ FROM node:18-alpine
 
 COPY . /cats
 
-RUN cd /cats && npm install
+RUN cd /cats && npm install --omit=dev
 
 WORKDIR /cats
 
