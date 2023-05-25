@@ -12,7 +12,7 @@ const LIMIT = 250;
 
 await setup("fetch all CulturePnt features", async () =>
   api
-    .get(`/collections/CulturePnt/items?limit=${LIMIT}`)
+    .get(`/daraa/collections/CulturePnt/items?limit=${LIMIT}`)
     .expect(200)
     .expect(CONTENT_TYPE, GEO_JSON)
     .expect((res) => vars.save(CULTURE_PNT_FEATURES, res.body))
@@ -92,7 +92,7 @@ describe(
         //Data is selected using filter
 
         api
-          .get("/collections/CulturePnt/items")
+          .get("/daraa/collections/CulturePnt/items")
           .query({ limit: LIMIT, ...test.query })
 
           // Success and returns GeoJSON

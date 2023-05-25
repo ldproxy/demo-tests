@@ -17,6 +17,7 @@
     "@catsjs/http": "^1.0.0-beta.6",
     "@catsjs/json": "^1.0.0-beta.6",
     "@catsjs/report": "^1.0.0-beta.6",
+    "chai": "^4.3.7",
     "mocha": "^10.2.0",
     "qs": "^6.11.2"
   }

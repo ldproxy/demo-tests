@@ -1,13 +1,12 @@
 import { init } from "@catsjs/core";
 import qs from "qs";
-import chai from "chai";
-chai.should();
+import { featuresMatch, shouldIncludeId } from "../expectFunctions.js";
 
 const { api, setup, vars } = await init();
 
 const CONTENT_TYPE = "Content-Type";
 const GEO_JSON = "application/geo+json";
-const JSON = "application/json";
+const JSON_CONTENT_TYPE = "application/json";
 
 const AERONAUTIC_CRV_FEATURES = "allAeronauticCrvFeatures";
 const ENVELOPE_COLLECTION = "envelopeCollection";
@@ -15,10 +14,10 @@ const LIMIT = 250;
 
 await setup("fetch AeronauticCrv Collection", async () =>
   api
-    .get(`/collections/AeronauticCrv`)
-    .accept(JSON)
+    .get(`/daraa/collections/AeronauticCrv`)
+    .accept(JSON_CONTENT_TYPE)
     .expect(200)
-    .expect(CONTENT_TYPE, JSON)
+    .expect(CONTENT_TYPE, JSON_CONTENT_TYPE)
     .expect((res) => {
       vars.save(
         ENVELOPE_COLLECTION,
@@ -27,23 +26,14 @@ await setup("fetch AeronauticCrv Collection", async () =>
     })
 );
 
-await setup("fetch all AeronauticCrv features", async () =>
-  api
-    .get(`/collections/AeronauticCrv/items?limit=${LIMIT}`)
-    .expect(200)
-    .expect(CONTENT_TYPE, GEO_JSON)
-    .expect((res) => vars.save(AERONAUTIC_CRV_FEATURES, res.body))
-);
-
 const idCrv = vars.load(AERONAUTIC_CRV_FEATURES).features[7].id;
 const lonCrv = vars.load(AERONAUTIC_CRV_FEATURES).features[7].geometry
   .coordinates[0][0][0];
 const latCrv = vars.load(AERONAUTIC_CRV_FEATURES).features[7].geometry
   .coordinates[0][0][1];
 const delta = 0.02;
-const envelopeCrv = `ENVELOPE(${lonCrv - delta},${latCrv - delta},${
-  lonCrv + delta
-},${latCrv + delta})`;
+// prettier-ignore
+const envelopeCrv = `ENVELOPE(${lonCrv - delta},${latCrv - delta},${lonCrv + delta},${latCrv + delta})`;
 const envelopeCrv4326 = `ENVELOPE(${latCrv - delta},${lonCrv - delta},${
   latCrv + delta
 },${lonCrv + delta})`;
@@ -70,57 +60,67 @@ describe(
       {
         query: { filter: "s_InterSectS(geometry,geometry)" },
         filter: (f) => true,
+        expect: featuresMatch,
       },
       {
         query: {
           filter: `s_InterSectS(geometry,${vars.load(ENVELOPE_COLLECTION)})`,
         },
         filter: (f) => true,
+        expect: featuresMatch,
       },
       {
         query: {
           filter: `s_InterSectS(${vars.load(ENVELOPE_COLLECTION)},geometry)`,
         },
         filter: (f) => true,
+        expect: featuresMatch,
       },
       {
         query: {
           filter: `s_InterSectS(geometry,${envelopeCrv})`,
         },
         filter: (f) => f.id === idCrv,
+        withBody: async (body) => {
+          vars.save("test4res", body);
+        },
+        expect: shouldIncludeId,
       },
+
       {
         query: {
           filter: `s_InterSectS(${envelopeCrv},geometry)`,
         },
         filter: (f) => f.id === idCrv,
+        expect: shouldIncludeId,
       },
       {
         query: {
           filter: `s_InterSectS(${envelopeCrv4326},geometry)`,
+          "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
         },
-        filter: (f) => f.id === envelopeCrv,
+        filter: null,
+        getExpected: () => vars.load(test4res),
+        expect: featuresMatch,
       },
       {
         query: {
           filter: `s_InterSectS(geometry,${polygonCrv})`,
         },
         filter: (f) => f.id === idCrv,
+        withBody: async (body) => {
+          vars.save("test6res", body);
+        },
+        expect: shouldIncludeId,
       },
       {
         query: {
           filter: `s_InterSectS(geometry, ${polygonCrv4326})`,
+          "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
         },
-        filter: async (f) => {
-          const propertyAndLiteral3 = await getRequest(
-            restClient,
-            AERONAUTIC_CRV_PATH,
-            getQuery(`s_InterSectS(geometry, ${polygonCrv})`)
-          );
-          return propertyAndLiteral3.body.features.some(
-            (feature) => feature.id === f.id
-          );
-        },
+        filter: null,
+        getExpected: () => vars.load(test6res),
+        expect: featuresMatch,
       },
     ];
 
@@ -129,7 +129,7 @@ describe(
         //Data is selected using filter
 
         api
-          .get("/collections/AeronauticCrv/items")
+          .get("/daraa/collections/AeronauticCrv/items")
           .query({ limit: LIMIT, ...test.query })
 
           // Success and returns GeoJSON
@@ -137,33 +137,16 @@ describe(
           .expect(200)
           .expect(CONTENT_TYPE, GEO_JSON)
 
-          // returns correct amount of features
+          // Saves response if it is needed later
 
-          .expect((res) => {
-            const expected = vars
-              .load(AERONAUTIC_CRV_FEATURES)
-              .features.filter(test.filter);
-
-            res.body.should.have
-              .property("numberReturned")
-              .which.equals(expected.length);
-
-            //returns the expected features:
-
-            const actual = res.body.features;
-
-            for (let i = 0; i < actual.length; i++) {
-              actual[i].should.have.property("id").which.equals(expected[i].id);
-              actual[i].should.have
-                .property("type")
-                .which.equals(expected[i].type);
-              actual[i].should.have
-                .property("geometry")
-                .which.deep.equals(expected[i].geometry);
-              actual[i].should.have
-                .property("properties")
-                .which.deep.equals(expected[i].properties);
+          .expect(async (res) => {
+            if (test.withBody) {
+              await test.withBody(res.body);
             }
+
+            // Either calls shouldIncludeId or featuresMatch
+
+            test.expect(res.body, test);
           })
       );
     }

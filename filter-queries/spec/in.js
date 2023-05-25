@@ -12,7 +12,7 @@ const LIMIT = 250;
 
 await setup("fetch all CulturePnt features", async () =>
   api
-    .get(`/collections/CulturePnt/items?limit=${LIMIT}`)
+    .get(`/daraa/collections/CulturePnt/items?limit=${LIMIT}`)
     .expect(200)
     .expect(CONTENT_TYPE, GEO_JSON)
     .expect((res) => vars.save(CULTURE_PNT_FEATURES, res.body))
@@ -47,7 +47,9 @@ describe(
         },
         filter: (f) => {
           const ZI037_REL = f.properties.ZI037_REL;
-          return ZI037_REL !== null && (ZI037_REL === 11 || ZI037_REL === 12);
+          return (
+            ZI037_REL !== undefined && (ZI037_REL === 11 || ZI037_REL === 12)
+          );
         },
       },
       {
@@ -56,7 +58,9 @@ describe(
         },
         filter: (f) => {
           const ZI037_REL = f.properties.ZI037_REL;
-          return ZI037_REL !== null && !(ZI037_REL === 11 || ZI037_REL === 12);
+          return (
+            ZI037_REL !== undefined && !(ZI037_REL === 11 || ZI037_REL === 12)
+          );
         },
       },
       {
@@ -80,7 +84,7 @@ describe(
         //Data is selected using filter
 
         api
-          .get("/collections/CulturePnt/items")
+          .get("/daraa/collections/CulturePnt/items")
           .query({ limit: LIMIT, ...test.query })
 
           // Success and returns GeoJSON

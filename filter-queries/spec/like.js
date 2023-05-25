@@ -12,7 +12,7 @@ const LIMIT = 250;
 
 await setup("fetch all CulturePnt features", async () =>
   api
-    .get(`/collections/CulturePnt/items?limit=${LIMIT}`)
+    .get(`/daraa/collections/CulturePnt/items?limit=${LIMIT}`)
     .expect(200)
     .expect(CONTENT_TYPE, GEO_JSON)
     .expect((res) => vars.save(CULTURE_PNT_FEATURES, res.body))
@@ -48,6 +48,7 @@ describe(
         filter: (f) => f.properties.F_CODE.match(/^AL0/i),
       },
       {
+        //To Do: Prüfen, ob der Response falsch ist. Bei case-sensitive Vergleich müssten 0 zurückkommen
         query: { filter: "F_CODE LiKe 'al0%'" },
         filter: (f) => f.properties.F_CODE.startsWith("al0"),
       },
@@ -62,7 +63,7 @@ describe(
         //Data is selected using filter
 
         api
-          .get("/collections/CulturePnt/items")
+          .get("/daraa/collections/CulturePnt/items")
           .query({ limit: LIMIT, ...test.query })
 
           // Success and returns GeoJSON

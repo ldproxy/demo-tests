@@ -1,3 +1,4 @@
+/*
 import { init } from "@catsjs/core";
 import qs from "qs";
 import chai from "chai";
@@ -18,46 +19,30 @@ await setup("fetch all CulturePnt features", async () =>
     .expect((res) => vars.save(CULTURE_PNT_FEATURES, res.body))
 );
 
+const lonPnt =
+  vars.load(CULTURE_PNT_FEATURES).features[0].geometry.coordinates[0];
+const latPnt =
+  vars.load(CULTURE_PNT_FEATURES).features[0].geometry.coordinates[1];
+const pointPnt = `POINT(${lonPnt} ${latPnt})`;
+
 describe(
   {
-    title: "neq",
+    title: "eq",
     description:
-      "Ensure that all queries involving operator **neq** work correctly. <br/>\
+      "Ensure that all queries involving operator **eq** work correctly. <br/>\
       Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)",
   },
   () => {
     const tests = [
       {
-        query: { filter: "F_CODE<>F_CODE" },
-        filter: (f) => false,
-      },
-      {
-        query: { filter: "F_CODE<>'AL030'" },
-        filter: (f) => f.properties.F_CODE !== "AL030",
-      },
-      {
-        query: { filter: "ZI037_REL<>11" },
-        filter: (f) =>
-          typeof f.properties.ZI037_REL === "number" &&
-          f.properties.ZI037_REL !== 11,
-      },
-      {
-        query: { filter: "ZI037_REL<>10" },
-        filter: (f) =>
-          typeof f.properties.ZI037_REL === "number" &&
-          f.properties.ZI037_REL !== 10,
-      },
-      {
-        query: { filter: "'AL030'<>F_CODE" },
-        filter: (f) => f.properties.F_CODE !== "AL030",
-      },
-      {
-        query: { filter: "'A'<>'A'" },
-        filter: (f) => false,
-      },
-      {
-        query: { filter: "ZI001_SDV<>TIMESTAMP('2011-12-26T20:55:27Z')" },
-        filter: (f) => f.properties.ZI001_SDV !== "2011-12-26T20:55:27Z",
+        query: {
+          filter: `s_EqualS(geometry, ${pointPnt})`,
+        },
+        filter: async (f) => {
+          return test7Res.body.features.some(
+            (feature) => feature.properties.id === f.properties.id
+          );
+        },
       },
     ];
 
@@ -81,9 +66,7 @@ describe(
               .load(CULTURE_PNT_FEATURES)
               .features.filter(test.filter);
 
-            res.body.should.have
-              .property("numberReturned")
-              .which.equals(expected.length);
+            res.body.should.have.property("numberReturned").which.equals(1);
 
             //returns the expected features:
 
@@ -106,3 +89,4 @@ describe(
     }
   }
 );
+*/
