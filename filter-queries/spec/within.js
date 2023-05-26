@@ -1,18 +1,17 @@
 import { init } from "@catsjs/core";
 import qs from "qs";
-import chai from "chai";
 import {
   featuresMatch,
-  shouldNotIncludeId,
   numberCheckSubtraction,
+  shouldIncludeId,
+  shouldNotIncludeId,
 } from "../expectFunctions.js";
-chai.should();
 
 const { api, setup, vars } = await init();
 
 const CONTENT_TYPE = "Content-Type";
 const GEO_JSON = "application/geo+json";
-const JSON = "application/json";
+const JSON_CONTENT_TYPE = "application/json";
 
 const collectionFeatures = "allAeronauticCrvFeatures";
 const ENVELOPE_COLLECTION = "envelopeCollection";
@@ -21,9 +20,9 @@ const LIMIT = 250;
 await setup("fetch AeronauticCrv Collection", async () =>
   api
     .get(`/daraa/collections/AeronauticCrv`)
-    .accept(JSON)
+    .accept(JSON_CONTENT_TYPE)
     .expect(200)
-    .expect(CONTENT_TYPE, JSON)
+    .expect(CONTENT_TYPE, JSON_CONTENT_TYPE)
     .expect((res) => {
       vars.save(
         ENVELOPE_COLLECTION,
@@ -55,54 +54,95 @@ const polygonCrv4326 = `POLYGON((${latCrv} ${lonCrv - delta}, ${
 } ${lonCrv}, ${latCrv} ${lonCrv + delta}, ${
   latCrv + delta
 } ${lonCrv}, ${latCrv} ${lonCrv - delta}))`;
-const test7Res = api
-  .get("/daraa/collections/AeronauticCrv/items")
-  .query({ limit: LIMIT, filter: `s_InterSectS(geometry,${polygonCrv})` });
+const idCrv = vars.load(collectionFeatures).features[7].id;
+const pointCrv = `POINT(${lonCrv} ${latCrv})`;
+const pointCrv4326 = `POINT(${latCrv} ${lonCrv})`;
 
 describe(
   {
-    title: "disjoint",
+    title: "within",
     description:
-      "Ensure that all queries involving operator **disjoint** work correctly. <br/>\
+      "Ensure that all queries involving operator **within** work correctly. <br/>\
       Collections: [Daraa - Aeronautic (Curves)](https://demo.ldproxy.net/daraa/collections/AeronauticCrv/items?f=html)",
   },
   () => {
     const tests = [
       {
-        query: { filter: `NoT s_DisJoinT(geometry,${polygonCrv})` },
-        filter: null,
+        query: { filter: `s_WithiN(geometry,${polygonCrv})` },
         withBody: async (body) => {
           vars.save("test1res", body);
         },
-        getExpected: test7Res,
-        expect: featuresMatch,
+        filter: (f) => f.id === idCrv,
+        expect: shouldIncludeId,
+        additional: (body) => {
+          body.should.have.property("numberReturned").which.is.greaterThan(0);
+        },
       },
       {
         query: {
-          filter: `NoT s_DisJoinT(geometry,${polygonCrv4326})`,
+          filter: `s_WithiN(geometry,${polygonCrv4326})`,
           "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
         },
-        filter: null,
         getExpected: () => vars.load(test1res),
+        filter: null,
         expect: featuresMatch,
       },
       {
-        query: { filter: `NoT s_DisJoinT(geometry,${polygonCrv})` },
-        filter: (f) => f.id === idCrv,
+        query: { filter: `NoT s_WithiN(geometry,${polygonCrv})` },
         withBody: async (body) => {
           vars.save("test3res", body);
         },
-        getExpected: () => vars.load(test1res),
+        filter: (f) => f.id === idCrv,
         expect: shouldNotIncludeId,
         additional: numberCheckSubtraction,
       },
       {
         query: {
-          filter: `NoT s_DisJoinT(geometry,${polygonCrv4326})`,
+          filter: `NoT s_WithiN(geometry,${polygonCrv4326})`,
           "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
         },
         getExpected: () => vars.load(test3res),
         expect: featuresMatch,
+        filter: null,
+      },
+      {
+        query: {
+          filter: `s_WithiN(${pointCrv}, ${polygonCrv})`,
+        },
+        withBody: async (body) => {
+          vars.save("test5res", body);
+        },
+        expect: featuresMatch,
+        filter: null,
+      },
+      {
+        query: {
+          filter: `s_WithiN(${pointCrv4326}, ${polygonCrv4326})`,
+          "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
+        },
+        getExpected: () => vars.load(test5res),
+        expect: featuresMatch,
+        filter: null,
+      },
+      {
+        query: {
+          filter: `NoT s_WithiN(geometry,${polygonCrv})`,
+        },
+        withBody: async (body) => {
+          vars.save("test7res", body);
+        },
+        expect: (body) =>
+          body.should.have.property("numberReturned").which.equals(12),
+        filter: null,
+      },
+      {
+        query: {
+          filter: `NoT s_WithiN(geometry,${polygonCrv4326})`,
+          "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
+        },
+        getExpected: () => vars.load(test7res),
+        expect: featuresMatch,
+        filter: null,
       },
     ];
 
@@ -132,8 +172,8 @@ describe(
             test.additional
               ? test.additional(
                   res.body,
-                  vars.load(collectionFeatures),
-                  test7Res.body
+                  collectionFeatures,
+                  vars.load(test1res)
                 )
               : null;
           })

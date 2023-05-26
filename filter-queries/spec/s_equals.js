@@ -1,8 +1,11 @@
-/*
 import { init } from "@catsjs/core";
 import qs from "qs";
-import chai from "chai";
-import { featuresMatch, shouldIncludeId } from "../expectFunctions.js";
+import chai, { expect } from "chai";
+import {
+  featuresMatch,
+  firstFeatureMatches,
+  numberCheckSubtract1,
+} from "../expectFunctions.js";
 chai.should();
 
 const { api, setup, vars } = await init();
@@ -25,12 +28,13 @@ const lonPnt =
 const latPnt =
   vars.load(collectionFeatures).features[0].geometry.coordinates[1];
 const pointPnt = `POINT(${lonPnt} ${latPnt})`;
+const pointPnt4326 = `POINT(${latPnt} ${lonPnt})`;
 
 describe(
   {
-    title: "eq",
+    title: "equals",
     description:
-      "Ensure that all queries involving operator **eq** work correctly. <br/>\
+      "Ensure that all queries involving operator **equals** work correctly. <br/>\
       Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)",
   },
   () => {
@@ -39,11 +43,42 @@ describe(
         query: {
           filter: `s_EqualS(geometry, ${pointPnt})`,
         },
-        filter: async (f) => {
-          return test7Res.body.features.some(
-            (feature) => feature.properties.id === f.properties.id
-          );
+        withBody: async (body) => {
+          vars.save("test1res", body);
         },
+        filter: null,
+        expect: firstFeatureMatches,
+        additional: (body) => {
+          body.should.have.property("numberReturned").which.equals(1);
+        },
+      },
+      {
+        query: {
+          filter: `s_EqualS(geometry, ${pointPnt4326})`,
+          "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
+        },
+        getExpected: () => vars.load(test1res),
+        filter: null,
+        expect: featuresMatch,
+      },
+      {
+        query: {
+          filter: `s_EqualS(geometry, ${pointPnt})`,
+        },
+        withBody: async (body) => {
+          vars.save("test3res", body);
+        },
+        filter: null,
+        expect: numberCheckSubtract1,
+      },
+      {
+        query: {
+          filter: `s_EqualS(geometry, ${pointPnt4326})`,
+          "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
+        },
+        getExpected: () => vars.load(test3res),
+        filter: null,
+        expect: featuresMatch,
       },
     ];
 
@@ -70,9 +105,9 @@ describe(
             // Either calls shouldIncludeId or featuresMatch
 
             test.expect(res.body, test, vars.load(collectionFeatures));
+            test.additional ? test.additional(res.body) : null;
           })
       );
     }
   }
 );
-*/

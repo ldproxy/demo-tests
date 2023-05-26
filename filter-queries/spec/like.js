@@ -1,5 +1,6 @@
 import { init } from "@catsjs/core";
 import qs from "qs";
+import { featuresMatch } from "../expectFunctions.js";
 import chai from "chai";
 chai.should();
 
@@ -7,7 +8,7 @@ const { api, setup, vars } = await init();
 
 const CONTENT_TYPE = "Content-Type";
 const GEO_JSON = "application/geo+json";
-const CULTURE_PNT_FEATURES = "allCulturePntFeatures";
+const collectionFeatures = "allCulturePntFeatures";
 const LIMIT = 250;
 
 await setup("fetch all CulturePnt features", async () =>
@@ -15,7 +16,7 @@ await setup("fetch all CulturePnt features", async () =>
     .get(`/daraa/collections/CulturePnt/items?limit=${LIMIT}`)
     .expect(200)
     .expect(CONTENT_TYPE, GEO_JSON)
-    .expect((res) => vars.save(CULTURE_PNT_FEATURES, res.body))
+    .expect((res) => vars.save(collectionFeatures, res.body))
 );
 
 describe(
@@ -30,31 +31,37 @@ describe(
       {
         query: { filter: "F_CODE LiKe 'AL0%'" },
         filter: (f) => f.properties.F_CODE.startsWith("AL0"),
+        expect: featuresMatch,
       },
       {
         query: { filter: "F_CODE LiKe 'AL0__'" },
         filter: (f) =>
           f.properties.F_CODE.startsWith("AL0") &&
           f.properties.F_CODE.length === 5,
+        expect: featuresMatch,
       },
       {
         query: { filter: "CASEI(F_CODE) LiKe casei('al0__')" },
         filter: (f) =>
           f.properties.F_CODE.match(/^AL0/i) &&
           f.properties.F_CODE.length === 5,
+        expect: featuresMatch,
       },
       {
         query: { filter: "CASEI(F_CODE) LiKe casei('al0%')" },
         filter: (f) => f.properties.F_CODE.match(/^AL0/i),
+        expect: featuresMatch,
       },
       {
         //To Do: Prüfen, ob der Response falsch ist. Bei case-sensitive Vergleich müssten 0 zurückkommen
         query: { filter: "F_CODE LiKe 'al0%'" },
         filter: (f) => f.properties.F_CODE.startsWith("al0"),
+        expect: featuresMatch,
       },
       {
         query: { filter: "F_CODE LiKe '%''%'" },
         filter: (f) => f.properties.F_CODE.includes("'"),
+        expect: featuresMatch,
       },
     ];
 
@@ -71,33 +78,16 @@ describe(
           .expect(200)
           .expect(CONTENT_TYPE, GEO_JSON)
 
-          // returns correct amount of features
+          // Saves response if it is needed later
 
-          .expect((res) => {
-            const expected = vars
-              .load(CULTURE_PNT_FEATURES)
-              .features.filter(test.filter);
-
-            res.body.should.have
-              .property("numberReturned")
-              .which.equals(expected.length);
-
-            //returns the expected features:
-
-            const actual = res.body.features;
-
-            for (let i = 0; i < actual.length; i++) {
-              actual[i].should.have.property("id").which.equals(expected[i].id);
-              actual[i].should.have
-                .property("type")
-                .which.equals(expected[i].type);
-              actual[i].should.have
-                .property("geometry")
-                .which.deep.equals(expected[i].geometry);
-              actual[i].should.have
-                .property("properties")
-                .which.deep.equals(expected[i].properties);
+          .expect(async (res) => {
+            if (test.withBody) {
+              await test.withBody(res.body);
             }
+
+            // Either calls shouldIncludeId or featuresMatch
+
+            test.expect(res.body, test, vars.load(collectionFeatures));
           })
       );
     }
