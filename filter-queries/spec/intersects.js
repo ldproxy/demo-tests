@@ -8,7 +8,7 @@ const CONTENT_TYPE = "Content-Type";
 const GEO_JSON = "application/geo+json";
 const JSON_CONTENT_TYPE = "application/json";
 
-const AERONAUTIC_CRV_FEATURES = "allAeronauticCrvFeatures";
+const collectionFeatures = "allAeronauticCrvFeatures";
 const ENVELOPE_COLLECTION = "envelopeCollection";
 const LIMIT = 250;
 
@@ -26,11 +26,19 @@ await setup("fetch AeronauticCrv Collection", async () =>
     })
 );
 
-const idCrv = vars.load(AERONAUTIC_CRV_FEATURES).features[7].id;
-const lonCrv = vars.load(AERONAUTIC_CRV_FEATURES).features[7].geometry
-  .coordinates[0][0][0];
-const latCrv = vars.load(AERONAUTIC_CRV_FEATURES).features[7].geometry
-  .coordinates[0][0][1];
+await setup("fetch all AeronauticCrv features", async () =>
+  api
+    .get(`/daraa/collections/AeronauticCrv/items?limit=${LIMIT}`)
+    .expect(200)
+    .expect(CONTENT_TYPE, GEO_JSON)
+    .expect((res) => vars.save(collectionFeatures, res.body))
+);
+
+const idCrv = vars.load(collectionFeatures).features[7].id;
+const lonCrv =
+  vars.load(collectionFeatures).features[7].geometry.coordinates[0][0][0];
+const latCrv =
+  vars.load(collectionFeatures).features[7].geometry.coordinates[0][0][1];
 const delta = 0.02;
 // prettier-ignore
 const envelopeCrv = `ENVELOPE(${lonCrv - delta},${latCrv - delta},${lonCrv + delta},${latCrv + delta})`;
@@ -146,7 +154,7 @@ describe(
 
             // Either calls shouldIncludeId or featuresMatch
 
-            test.expect(res.body, test);
+            test.expect(res.body, test, vars.load(collectionFeatures));
           })
       );
     }

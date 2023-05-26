@@ -1,27 +1,10 @@
-import { init } from "@catsjs/core";
 import chai from "chai";
 chai.should();
 
-const { api, setup, vars } = await init();
-
-const CONTENT_TYPE = "Content-Type";
-const GEO_JSON = "application/geo+json";
-
-const AERONAUTIC_CRV_FEATURES = "allAeronauticCrvFeatures";
-const LIMIT = 250;
-
-await setup("fetch all AeronauticCrv features", async () =>
-  api
-    .get(`/daraa/collections/AeronauticCrv/items?limit=${LIMIT}`)
-    .expect(200)
-    .expect(CONTENT_TYPE, GEO_JSON)
-    .expect((res) => vars.save(AERONAUTIC_CRV_FEATURES, res.body))
-);
-
-export const featuresMatch = (body, test) => {
+export const featuresMatch = (body, test, collectionFeatures) => {
   const expected = test.getExpected
     ? test.getExpected
-    : vars.load(AERONAUTIC_CRV_FEATURES).features.filter(test.filter);
+    : collectionFeatures.features.filter(test.filter);
 
   body.should.have.property("numberReturned").which.equals(expected.length);
 

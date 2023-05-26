@@ -1,7 +1,7 @@
-/*
 import { init } from "@catsjs/core";
 import qs from "qs";
 import chai from "chai";
+import { featuresMatch } from "../expectFunctions.js";
 chai.should();
 
 const { api, setup, vars } = await init();
@@ -52,12 +52,6 @@ const polygonCrv4326 = `POLYGON((${latCrv} ${lonCrv - delta}, ${
 } ${lonCrv}, ${latCrv} ${lonCrv + delta}, ${
   latCrv + delta
 } ${lonCrv}, ${latCrv} ${lonCrv - delta}))`;
-const test7Res = api
-  .get("/daraa/collections/AeronauticCrv/items")
-  .query({ limit: LIMIT, filter: `s_InterSectS(geometry,${polygonCrv})` });
-const test1Res = api
-  .get("/daraa/collections/AeronauticCrv/items")
-  .query({ limit: LIMIT, filter: `NoT s_DisJoinT(geometry,${polygonCrv})` });
 
 describe(
   {
@@ -70,21 +64,20 @@ describe(
     const tests = [
       {
         query: { filter: `NoT s_DisJoinT(geometry,${polygonCrv})` },
-        filter: async (f) => {
-          return test7Res.body.features.some(
-            (feature) => feature.properties.id === f.properties.id
-          );
+        filter: null,
+        withBody: async (body) => {
+          vars.save("test1res", body);
         },
+        getExpected: test7Res,
+        expect: featuresMatch,
       },
       {
         query: {
           filter: `NoT s_DisJoinT(geometry,${polygonCrv4326})`,
         },
-        filter: async (f) => {
-          return test1Res.body.features.some(
-            (feature) => feature.properties.id === f.properties.id
-          );
-        },
+        filter: null,
+        getExpected: () => vars.load(test1Res),
+        expect: featuresMatch,
       },
       //getQuery4326?
       {
@@ -112,36 +105,18 @@ describe(
           .expect(200)
           .expect(CONTENT_TYPE, GEO_JSON)
 
-          // returns correct amount of features
+          // Saves response if it is needed later
 
-          .expect((res) => {
-            const expected = vars
-              .load(AERONAUTIC_CRV_FEATURES)
-              .features.filter(test.filter);
-
-            res.body.should.have
-              .property("numberReturned")
-              .which.equals(expected.length);
-
-            //returns the expected features:
-
-            const actual = res.body.features;
-
-            for (let i = 0; i < actual.length; i++) {
-              actual[i].should.have.property("id").which.equals(expected[i].id);
-              actual[i].should.have
-                .property("type")
-                .which.equals(expected[i].type);
-              actual[i].should.have
-                .property("geometry")
-                .which.deep.equals(expected[i].geometry);
-              actual[i].should.have
-                .property("properties")
-                .which.deep.equals(expected[i].properties);
+          .expect(async (res) => {
+            if (test.withBody) {
+              await test.withBody(res.body);
             }
+
+            // Either calls shouldIncludeId or featuresMatch
+
+            test.expect(res.body, test, vars.load(collectionFeatures));
           })
       );
     }
   }
 );
-*/
