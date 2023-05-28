@@ -131,4 +131,5 @@ dist
 
 .DS_Store
 report/
-**/report
+reports/
+**/report/

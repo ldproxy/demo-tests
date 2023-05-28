@@ -6,6 +6,6 @@ RUN cd /cats && npm install --omit=dev
 
 WORKDIR /cats
 
-VOLUME ["/cats/filter-queries/report"]
+VOLUME ["/reports"]
 
-ENTRYPOINT ["/cats/woodpecker-plugin.sh"]
+ENTRYPOINT ["/cats/entrypoint.sh"]

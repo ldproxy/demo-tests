@@ -3,8 +3,6 @@
 i=0
 REPORT_DIR="reports"
 
-# TODO: cats reportDir and reportFilename
-
 if [ "$API" != "" ]; then
   export CATS_API="$API"
 fi
@@ -18,6 +16,8 @@ fi
 
 if [ "$CI_WORKSPACE" != "" ]; then
   export CATS_REPORT_DIR="$CI_WORKSPACE/$REPORT_DIR"
+else
+  export CATS_REPORT_DIR="/reports"
 fi
 
 if [ "$FILTER_QUERIES" = "true" -o "$PLUGIN_FILTER_QUERIES" = "true" ]; then

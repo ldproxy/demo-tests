@@ -7,3 +7,11 @@ protocol:
 contentTypes:
   - "@catsjs/json"
 verbose: false
+report:
+  dir: ../reports
+  name: full
+waitFor:
+  path:
+    - /daraa
+    - /cshapes
+  timeout: 120
