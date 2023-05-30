@@ -83,7 +83,7 @@ describe(
           filter: `s_WithiN(geometry,${polygonCrv4326})`,
           "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
         },
-        getExpected: () => vars.load(test1res),
+        getExpected: () => vars.load("test1res"),
         filter: null,
         expect: featuresMatch,
       },
@@ -101,7 +101,7 @@ describe(
           filter: `NoT s_WithiN(geometry,${polygonCrv4326})`,
           "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
         },
-        getExpected: () => vars.load(test3res),
+        getExpected: () => vars.load("test3res"),
         expect: featuresMatch,
         filter: null,
       },
@@ -120,7 +120,7 @@ describe(
           filter: `s_WithiN(${pointCrv4326}, ${polygonCrv4326})`,
           "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
         },
-        getExpected: () => vars.load(test5res),
+        getExpected: () => vars.load("test5res"),
         expect: featuresMatch,
         filter: null,
       },
@@ -140,7 +140,7 @@ describe(
           filter: `NoT s_WithiN(geometry,${polygonCrv4326})`,
           "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
         },
-        getExpected: () => vars.load(test7res),
+        getExpected: () => vars.load("test7res"),
         expect: featuresMatch,
         filter: null,
       },
@@ -172,8 +172,8 @@ describe(
             test.additional
               ? test.additional(
                   res.body,
-                  collectionFeatures,
-                  vars.load(test1res)
+                  vars.load(collectionFeatures),
+                  vars.load("test1res")
                 )
               : null;
           })

@@ -1,18 +1,12 @@
 import { init } from "@catsjs/core";
 import qs from "qs";
-import chai from "chai";
-import {
-  featuresMatch,
-  shouldNotIncludeId,
-  numberCheckSubtraction,
-} from "../expectFunctions.js";
-chai.should();
+import { featuresMatch, shouldIncludeId } from "../expectFunctions.js";
 
 const { api, setup, vars } = await init();
 
 const CONTENT_TYPE = "Content-Type";
 const GEO_JSON = "application/geo+json";
-const JSON = "application/json";
+const JSON_CONTENT_TYPE = "application/json";
 
 const collectionFeatures = "allAeronauticCrvFeatures";
 const ENVELOPE_COLLECTION = "envelopeCollection";
@@ -21,9 +15,9 @@ const LIMIT = 250;
 await setup("fetch AeronauticCrv Collection", async () =>
   api
     .get(`/daraa/collections/AeronauticCrv`)
-    .accept(JSON)
+    .accept(JSON_CONTENT_TYPE)
     .expect(200)
-    .expect(CONTENT_TYPE, JSON)
+    .expect(CONTENT_TYPE, JSON_CONTENT_TYPE)
     .expect((res) => {
       vars.save(
         ENVELOPE_COLLECTION,
@@ -40,11 +34,17 @@ await setup("fetch all AeronauticCrv features", async () =>
     .expect((res) => vars.save(collectionFeatures, res.body))
 );
 
+const idCrv = vars.load(collectionFeatures).features[7].id;
 const lonCrv =
   vars.load(collectionFeatures).features[7].geometry.coordinates[0][0][0];
 const latCrv =
   vars.load(collectionFeatures).features[7].geometry.coordinates[0][0][1];
 const delta = 0.02;
+// prettier-ignore
+const envelopeCrv = `ENVELOPE(${lonCrv - delta},${latCrv - delta},${lonCrv + delta},${latCrv + delta})`;
+const envelopeCrv4326 = `ENVELOPE(${latCrv - delta},${lonCrv - delta},${
+  latCrv + delta
+},${lonCrv + delta})`;
 const polygonCrv = `POLYGON((${lonCrv - delta} ${latCrv},${lonCrv} ${
   latCrv - delta
 },${lonCrv + delta} ${latCrv},${lonCrv} ${latCrv + delta},${
@@ -55,53 +55,79 @@ const polygonCrv4326 = `POLYGON((${latCrv} ${lonCrv - delta}, ${
 } ${lonCrv}, ${latCrv} ${lonCrv + delta}, ${
   latCrv + delta
 } ${lonCrv}, ${latCrv} ${lonCrv - delta}))`;
-const test7Res = api
-  .get("/daraa/collections/AeronauticCrv/items")
-  .query({ limit: LIMIT, filter: `s_InterSectS(geometry,${polygonCrv})` });
 
 describe(
   {
-    title: "disjoint",
+    title: "intersects",
     description:
-      "Ensure that all queries involving operator **disjoint** work correctly. <br/>\
+      "Ensure that all queries involving operator **intersects** work correctly. <br/>\
       Collections: [Daraa - Aeronautic (Curves)](https://demo.ldproxy.net/daraa/collections/AeronauticCrv/items?f=html)",
   },
   () => {
     const tests = [
       {
-        query: { filter: `NoT s_DisJoinT(geometry,${polygonCrv})` },
-        filter: null,
-        withBody: async (body) => {
-          vars.save("test1res", body);
-        },
-        getExpected: test7Res,
+        query: { filter: "s_InterSectS(geometry,geometry)" },
+        filter: (f) => true,
         expect: featuresMatch,
       },
       {
         query: {
-          filter: `NoT s_DisJoinT(geometry,${polygonCrv4326})`,
-          "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
+          filter: `s_InterSectS(geometry,${vars.load(ENVELOPE_COLLECTION)})`,
         },
-        filter: null,
-        getExpected: () => vars.load(test1res),
+        filter: (f) => true,
         expect: featuresMatch,
       },
       {
-        query: { filter: `NoT s_DisJoinT(geometry,${polygonCrv})` },
+        query: {
+          filter: `s_InterSectS(${vars.load(ENVELOPE_COLLECTION)},geometry)`,
+        },
+        filter: (f) => true,
+        expect: featuresMatch,
+      },
+      {
+        query: {
+          filter: `s_InterSectS(geometry,${envelopeCrv})`,
+        },
         filter: (f) => f.id === idCrv,
         withBody: async (body) => {
-          vars.save("test3res", body);
+          vars.save("test4res", body);
         },
-        getExpected: () => vars.load(test1res),
-        expect: shouldNotIncludeId,
-        additional: numberCheckSubtraction,
+        expect: shouldIncludeId,
+      },
+
+      {
+        query: {
+          filter: `s_InterSectS(${envelopeCrv},geometry)`,
+        },
+        filter: (f) => f.id === idCrv,
+        expect: shouldIncludeId,
       },
       {
         query: {
-          filter: `NoT s_DisJoinT(geometry,${polygonCrv4326})`,
+          filter: `s_InterSectS(${envelopeCrv4326},geometry)`,
           "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
         },
-        getExpected: () => vars.load(test3res),
+        filter: null,
+        getExpected: () => vars.load("test4res"),
+        expect: featuresMatch,
+      },
+      {
+        query: {
+          filter: `s_InterSectS(geometry,${polygonCrv})`,
+        },
+        filter: (f) => f.id === idCrv,
+        withBody: async (body) => {
+          vars.save("test6res", body);
+        },
+        expect: shouldIncludeId,
+      },
+      {
+        query: {
+          filter: `s_InterSectS(geometry, ${polygonCrv4326})`,
+          "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
+        },
+        filter: null,
+        getExpected: () => vars.load("test6res"),
         expect: featuresMatch,
       },
     ];
@@ -129,13 +155,6 @@ describe(
             // Either calls shouldIncludeId or featuresMatch
 
             test.expect(res.body, test, vars.load(collectionFeatures));
-            test.additional
-              ? test.additional(
-                  res.body,
-                  vars.load(collectionFeatures),
-                  test7Res.body
-                )
-              : null;
           })
       );
     }

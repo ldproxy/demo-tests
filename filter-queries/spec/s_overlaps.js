@@ -32,29 +32,28 @@ const pointPnt4326 = `POINT(${latPnt} ${lonPnt})`;
 
 describe(
   {
-    title: "equals",
+    title: "overlaps",
     description:
-      "Ensure that all queries involving operator **equals** work correctly. <br/>\
+      "Ensure that all queries involving operator **overlaps** work correctly. <br/>\
       Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)",
   },
   () => {
     const tests = [
       {
         query: {
-          filter: `s_EqualS(geometry, ${pointPnt})`,
+          filter: `s_OvErLaPs(geometry, ${pointPnt})`,
         },
-        withBody: async (body) => {
+        withBody: (body) => {
           vars.save("test1res", body);
         },
         filter: null,
-        expect: firstFeatureMatches,
-        additional: (body) => {
-          body.should.have.property("numberReturned").which.equals(1);
+        expect: (body) => {
+          body.should.have.property("numberReturned").which.equals(0);
         },
       },
       {
         query: {
-          filter: `s_EqualS(geometry, ${pointPnt4326})`,
+          filter: `s_OvErLaPs(geometry, ${pointPnt4326})`,
           "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
         },
         getExpected: () => vars.load("test1res"),
@@ -63,22 +62,12 @@ describe(
       },
       {
         query: {
-          filter: `s_EqualS(geometry, ${pointPnt})`,
-        },
-        withBody: async (body) => {
-          vars.save("test3res", body);
+          filter: `s_OvErLaPs(geometry, geometry)`,
         },
         filter: null,
-        expect: numberCheckSubtract1,
-      },
-      {
-        query: {
-          filter: `s_EqualS(geometry, ${pointPnt4326})`,
-          "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
+        expect: (body) => {
+          body.should.have.property("numberReturned").which.equals(0);
         },
-        getExpected: () => vars.load("test3res"),
-        filter: null,
-        expect: featuresMatch,
       },
     ];
 
@@ -97,9 +86,9 @@ describe(
 
           // Saves response if it is needed later
 
-          .expect(async (res) => {
+          .expect((res) => {
             if (test.withBody) {
-              await test.withBody(res.body);
+              test.withBody(res.body);
             }
 
             // Either calls shouldIncludeId or featuresMatch
