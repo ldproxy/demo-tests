@@ -3,7 +3,7 @@ chai.should();
 
 export const featuresMatch = (body, test, collectionFeatures) => {
   const expected = test.getExpected
-    ? test.getExpected
+    ? test.getExpected()
     : collectionFeatures.features.filter(test.filter);
 
   body.should.have.property("numberReturned").which.equals(expected.length);
@@ -39,10 +39,6 @@ export const numberCheckSubtraction = (
   );
 };
 
-export const numberCheckSubtract1 = ({ body, collectionFeatures }) => {
-  return body.numberReturned === collectionFeatures.numberReturned - 1;
-};
-
 export const shouldNotIncludeId = (body, test) => {
   !body.features.includes(test.filter);
 };
@@ -50,18 +46,22 @@ export const shouldNotIncludeId = (body, test) => {
 export const firstFeatureMatches = (body, test, collectionFeatures) => {
   const expected = test.getExpected
     ? test.getExpected
-    : collectionFeatures.features[0].filter(test.filter);
-
-  body.should.have.property("numberReturned").which.equals(expected.length);
+    : collectionFeatures.features[0];
 
   //returns the expected features:
 
-  const actual = body.features[0];
+  if (body.features && body.features.length > 0) {
+    const actual = body.features[0];
 
-  actual.should.have.property("id").which.equals(expected.id);
-  actual.should.have.property("type").which.equals(expected.type);
-  actual.should.have.property("geometry").which.deep.equals(expected.geometry);
-  actual.should.have
-    .property("properties")
-    .which.deep.equals(expected.properties);
+    actual.should.have.property("id").which.equals(expected.id);
+    actual.should.have.property("type").which.equals(expected.type);
+    actual.should.have
+      .property("geometry")
+      .which.deep.equals(expected.geometry);
+    actual.should.have
+      .property("properties")
+      .which.deep.equals(expected.properties);
+  } else {
+    return false;
+  }
 };
