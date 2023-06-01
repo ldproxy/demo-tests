@@ -21,7 +21,7 @@ await setup("fetch all CulturePnt features", async () =>
 
 describe(
   {
-    title: "simple operators",
+    title: "scalar operators",
   },
   () => {
     describe(

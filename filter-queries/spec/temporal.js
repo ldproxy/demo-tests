@@ -38,7 +38,7 @@ describe(
         title: "t_intersects",
         description:
           "Ensure that all queries involving operator **t_intersects** work correctly. <br/>\
-      Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)",
+      Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html), [Cshapes - Boundary](https://demo.ldproxy.net/cshapes/collections/boundary/items?f=html)",
       },
       () => {
         const tests = [
@@ -204,43 +204,33 @@ describe(
               })
           );
         }
-      }
-    );
-    describe(
-      {
-        title: "t_intersects",
-        description:
-          "Ensure that all queries involving operator **t_intersects** work correctly. <br/>\
-      Collections: [Cshapes - Boundary](https://demo.ldproxy.net/cshapes/collections/boundary/items?f=html)",
-      },
-      () => {
-        const tests = [
+        const tests2 = [
           {
             query: {
-              filter: `CASEI(name) LIKE CASEI('%Germany%') AND T_INTERSECTS(INTERVAL(cowbegin,cowend),INTERVAL('1955-01-01','1990-10-02'))`,
+              filter: `CASEI(name) LIKE CASEI('%Germany%') AND T_INTERSECTS(INTERVAL(gwsdate,gwedate),INTERVAL('1955-01-01','1990-10-02'))`,
             },
             filter: (f) =>
               f.properties.name.toLowerCase().startsWith("germany") &&
               !(
-                f.properties.cowend < "1955-01-01" ||
-                f.properties.cowbegin >= "1990-10-03"
+                f.properties.gwedate < "1955-01-01" ||
+                f.properties.gwsdate >= "1990-10-03"
               ),
             expect: featuresMatch,
           },
           {
             query: {
-              filter: `T_INTERSECTS(INTERVAL(cowbegin,'..'),INTERVAL('..',cowend))`,
+              filter: `T_INTERSECTS(INTERVAL(gwsdate,'..'),INTERVAL('..',gwedate))`,
             },
             filter: null,
             expect: (body) => {
               body.should.have
                 .property("numberReturned")
-                .which.equals(vars.load(BoundaryFeatures).length);
+                .which.equals(vars.load(BoundaryFeatures).numberReturned);
             },
           },
         ];
 
-        for (const test of tests) {
+        for (const test of tests2) {
           it(qs.stringify(test.query, { encode: false }), () =>
             //Data is selected using filter
 
@@ -273,7 +263,7 @@ describe(
         title: "t_disjoint",
         description:
           "Ensure that all queries involving operator **t_disjoint** work correctly. <br/>\
-          Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)",
+          Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html), [Cshapes - Boundary](https://demo.ldproxy.net/cshapes/collections/boundary/items?f=html)",
       },
       () => {
         const tests = [
@@ -296,7 +286,7 @@ describe(
             withBody: (body) => {
               vars.save("test2res", body);
             },
-            filter: (f) => f.properties.ZI001_SDV < "2012",
+            filter: (f) => f.properties.ZI001_SDV > "2012",
             expect: featuresMatch,
           },
           {
@@ -306,7 +296,7 @@ describe(
             withBody: (body) => {
               vars.save("test3res", body);
             },
-            filter: (f) => f.properties.ZI001_SDV > "2012",
+            filter: (f) => f.properties.ZI001_SDV < "2012",
             expect: featuresMatch,
           },
           {
@@ -442,31 +432,21 @@ describe(
               })
           );
         }
-      }
-    );
-    describe(
-      {
-        title: "t_disjoint",
-        description:
-          "Ensure that all queries involving operator **t_disjoint** work correctly. <br/>\
-          Collections: [Cshapes - Boundary](https://demo.ldproxy.net/cshapes/collections/boundary/items?f=html)",
-      },
-      () => {
-        const tests = [
+        const tests2 = [
           {
             query: {
-              filter: `CASEI(name) LIKE CASEI('%Germany%') AND T_DISJOINT(INTERVAL(cowbegin,cowend),INTERVAL('1955-01-01','1990-10-02'))`,
+              filter: `CASEI(name) LIKE CASEI('%Germany%') AND T_DISJOINT(INTERVAL(gwsdate,gwedate),INTERVAL('1955-01-01','1990-10-02'))`,
             },
             filter: (f) => {
               f.properties.name.toLowerCase().startsWith("germany") &&
-                (f.properties.cowend < "1955-01-01" ||
-                  f.properties.cowbegin >= "1990-10-03");
+                (f.properties.gwedate < "1955-01-01" ||
+                  f.properties.gwsdate >= "1990-10-03");
             },
             expect: featuresMatch,
           },
         ];
 
-        for (const test of tests) {
+        for (const test of tests2) {
           it(qs.stringify(test.query, { encode: false }), () =>
             //Data is selected using filter
 
@@ -519,7 +499,7 @@ describe(
           },
           {
             query: {
-              datetime: "2011-12-26T20%3A55%3A27Z",
+              datetime: "2011-12-26T20:55:27Z",
             },
             filter: (f) => f.properties.ZI001_SDV == "2011-12-26T20:55:27Z",
             expect: featuresMatch,
@@ -566,7 +546,7 @@ describe(
         title: "t_after",
         description:
           "Ensure that all queries involving operator **t_after** work correctly. <br/>\
-          Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)",
+          Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html), [Cshapes - Boundary](https://demo.ldproxy.net/cshapes/collections/boundary/items?f=html)",
       },
       () => {
         const tests = [
@@ -597,7 +577,7 @@ describe(
             query: {
               filter: `T_AFTER(ZI001_SDV,INTERVAL('2011-01-01T00:00:00Z','2011-12-31T23:59:59Z'))`,
             },
-            filter: (f) => true,
+            filter: (f) => f.properties.ZI001_SDV > "2011-12-31T23:59:59Z",
             expect: featuresMatch,
           },
         ];
@@ -628,29 +608,19 @@ describe(
               })
           );
         }
-      }
-    );
-    describe(
-      {
-        title: "t_after",
-        description:
-          "Ensure that all queries involving operator **t_after** work correctly. <br/>\
-          Collections: [Cshapes - Boundary](https://demo.ldproxy.net/cshapes/collections/boundary/items?f=html)",
-      },
-      () => {
-        const tests = [
+        const tests2 = [
           {
             query: {
-              filter: `CASEI(name) LIKE CASEI('%Germany%') AND T_AFTER(INTERVAL(cowbegin,cowend),INTERVAL('1955-05-05','1990-10-02'))`,
+              filter: `CASEI(name) LIKE CASEI('%Germany%') AND T_AFTER(INTERVAL(gwsdate,gwedate),INTERVAL('1955-05-05','1990-10-02'))`,
             },
             filter: (f) =>
               f.properties.name.toLowerCase().startsWith("germany") &&
-              f.properties.cowbegin > "1990-10-02",
+              f.properties.gwsdate > "1990-10-02",
             expect: featuresMatch,
           },
         ];
 
-        for (const test of tests) {
+        for (const test of tests2) {
           it(qs.stringify(test.query, { encode: false }), () =>
             //Data is selected using filter
 
@@ -683,7 +653,7 @@ describe(
         title: "t_before",
         description:
           "Ensure that all queries involving operator **t_before** work correctly. <br/>\
-          Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)",
+          Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html), [Cshapes - Boundary](https://demo.ldproxy.net/cshapes/collections/boundary/items?f=html)",
       },
       () => {
         const tests = [
@@ -714,7 +684,7 @@ describe(
             query: {
               filter: `T_BeForE(ZI001_SDV, INTERVAL('2011-12-31T23:59:59Z','..'))`,
             },
-            filter: (f) => f.properties.ZI001_SDV > "2011-12-31T23:59:59Z",
+            filter: (f) => f.properties.ZI001_SDV < "2012-01-01T00:00:00Z",
             expect: featuresMatch,
           },
         ];
@@ -745,29 +715,19 @@ describe(
               })
           );
         }
-      }
-    );
-    describe(
-      {
-        title: "t_before",
-        description:
-          "Ensure that all queries involving operator **t_before** work correctly. <br/>\
-      Collections: [Cshapes - Boundary](https://demo.ldproxy.net/cshapes/collections/boundary/items?f=html)",
-      },
-      () => {
-        const tests = [
+        const tests2 = [
           {
             query: {
-              filter: `CASEI(name) LIKE CASEI('%Germany%') AND T_BEFORE(INTERVAL(cowbegin,cowend),INTERVAL('1990-10-03','2020-12-31'))`,
+              filter: `CASEI(name) LIKE CASEI('%Germany%') AND T_BEFORE(INTERVAL(gwsdate,gwedate),INTERVAL('1990-10-03','2020-12-31'))`,
             },
             filter: (f) =>
               f.properties.name.toLowerCase().startsWith("germany") &&
-              f.properties.cowend < "1990-10-03",
+              f.properties.gwedate < "1990-10-03",
             expect: featuresMatch,
           },
         ];
 
-        for (const test of tests) {
+        for (const test of tests2) {
           it(qs.stringify(test.query, { encode: false }), () =>
             //Data is selected using filter
 

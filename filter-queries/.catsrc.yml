@@ -9,7 +9,7 @@ contentTypes:
 verbose: false
 report:
   dir: ../reports
-  name: full
+#  name: full
 waitFor:
   path:
     - /daraa
