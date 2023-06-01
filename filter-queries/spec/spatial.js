@@ -96,172 +96,6 @@ describe(
   () => {
     describe(
       {
-        title: "s_touches",
-        description:
-          "Ensure that all queries involving operator **s_touches** work correctly. <br/>\
-      Collections: [Daraa - Aeronautic (Curves)](https://demo.ldproxy.net/daraa/collections/AeronauticCrv/items?f=html)",
-      },
-      () => {
-        const tests = [
-          {
-            query: { filter: `s_ToUcHeS(geometry,${pointCrv})` },
-            withBody: (body) => {
-              vars.save("test1res", body);
-            },
-            filter: (f) => f.id === idCrv,
-            expect: shouldIncludeId,
-            additional: (body) => {
-              body.should.have
-                .property("numberReturned")
-                .which.is.greaterThan(0);
-            },
-            additional1: (body) => {
-              body.should.have
-                .property("numberReturned")
-                .which.is.greaterThan(1);
-            },
-          },
-          {
-            query: {
-              filter: `s_ToUcHeS(geometry,${pointCrv4326})`,
-              "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
-            },
-            getExpected: () => vars.load("test1res").features,
-            filter: null,
-            expect: featuresMatch,
-          },
-          {
-            query: {
-              filter: `s_ToUcHeS(geometry,${polygonCrv})`,
-            },
-            withBody: (body) => {
-              vars.save("test3res", body);
-            },
-            filter: null,
-            expect: (body) =>
-              body.should.have.property("numberReturned").which.equals(0),
-          },
-          {
-            query: {
-              filter: `s_ToUcHeS(geometry,${polygonCrv4326})`,
-              "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
-            },
-            getExpected: () => vars.load("test3res").features,
-            filter: null,
-            expect: featuresMatch,
-          },
-          {
-            query: {
-              filter: `s_ToUcHeS(geometry, geometry)`,
-            },
-            filter: null,
-            expect: (body) =>
-              body.should.have.property("numberReturned").which.equals(0),
-          },
-        ];
-
-        for (const test of tests) {
-          it(qs.stringify(test.query, { encode: false }), () =>
-            //Data is selected using filter
-
-            api
-              .get("/daraa/collections/AeronauticCrv/items")
-              .query({ limit: LIMIT, ...test.query })
-
-              // Success and returns GeoJSON
-
-              .expect(200)
-              .expect(CONTENT_TYPE, GEO_JSON)
-
-              // Saves response if it is needed later
-
-              .expect((res) => {
-                if (test.withBody) {
-                  test.withBody(res.body);
-                }
-
-                // Either calls shouldIncludeId or featuresMatch
-
-                test.expect(res.body, test, vars.load(AeronauticFeatures));
-                test.additional ? test.additional(res.body) : null;
-                test.additional1 ? test.additional1(res.body) : null;
-              })
-          );
-        }
-      }
-    ),
-      describe(
-        {
-          title: "s_overlaps",
-          description:
-            "Ensure that all queries involving operator **s_overlaps** work correctly. <br/>\
-          Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)",
-        },
-        () => {
-          const tests = [
-            {
-              query: {
-                filter: `s_OvErLaPs(geometry, ${pointPnt})`,
-              },
-              withBody: (body) => {
-                vars.save("test1res", body);
-              },
-              filter: null,
-              expect: (body) => {
-                body.should.have.property("numberReturned").which.equals(0);
-              },
-            },
-            {
-              query: {
-                filter: `s_OvErLaPs(geometry, ${pointPnt4326})`,
-                "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
-              },
-              getExpected: () => vars.load("test1res").features,
-              filter: null,
-              expect: featuresMatch,
-            },
-            {
-              query: {
-                filter: `s_OvErLaPs(geometry, geometry)`,
-              },
-              filter: null,
-              expect: (body) => {
-                body.should.have.property("numberReturned").which.equals(0);
-              },
-            },
-          ];
-
-          for (const test of tests) {
-            it(qs.stringify(test.query, { encode: false }), () =>
-              //Data is selected using filter
-
-              api
-                .get("/daraa/collections/CulturePnt/items")
-                .query({ limit: LIMIT, ...test.query })
-
-                // Success and returns GeoJSON
-
-                .expect(200)
-                .expect(CONTENT_TYPE, GEO_JSON)
-
-                // Saves response if it is needed later
-
-                .expect((res) => {
-                  if (test.withBody) {
-                    test.withBody(res.body);
-                  }
-
-                  // Either calls shouldIncludeId or featuresMatch
-
-                  test.expect(res.body, test, vars.load(CultureFeatures));
-                  test.additional ? test.additional(res.body) : null;
-                })
-            );
-          }
-        }
-      );
-    describe(
-      {
         title: "s_intersects",
         description:
           "Ensure that all queries involving operator **s_intersects** work correctly. <br/>\
@@ -363,131 +197,6 @@ describe(
                 // Either calls shouldIncludeId or featuresMatch
 
                 test.expect(res.body, test, vars.load(AeronauticFeatures));
-              })
-          );
-        }
-      }
-    );
-    describe(
-      {
-        title: "s_within",
-        description:
-          "Ensure that all queries involving operator **s_within** work correctly. <br/>\
-          Collections: [Daraa - Aeronautic (Curves)](https://demo.ldproxy.net/daraa/collections/AeronauticCrv/items?f=html)",
-      },
-      () => {
-        const tests = [
-          {
-            query: { filter: `s_WithiN(geometry,${polygonCrv})` },
-            withBody: (body) => {
-              vars.save("test1res", body);
-            },
-            filter: (f) => f.id === idCrv,
-            expect: shouldIncludeId,
-            additional: (body) => {
-              body.should.have
-                .property("numberReturned")
-                .which.is.greaterThan(0);
-            },
-          },
-          {
-            query: {
-              filter: `s_WithiN(geometry,${polygonCrv4326})`,
-              "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
-            },
-            getExpected: () => vars.load("test1res").features,
-            filter: null,
-            expect: featuresMatch,
-          },
-          {
-            query: { filter: `NoT s_WithiN(geometry,${polygonCrv})` },
-            withBody: (body) => {
-              vars.save("test3res", body);
-            },
-            filter: (f) => f.id === idCrv,
-            expect: shouldNotIncludeId,
-            additional: numberCheckSubtraction,
-          },
-          {
-            query: {
-              filter: `NoT s_WithiN(geometry,${polygonCrv4326})`,
-              "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
-            },
-            getExpected: () => vars.load("test3res").features,
-            expect: featuresMatch,
-            filter: null,
-          },
-          {
-            query: {
-              filter: `s_WithiN(${pointCrv}, ${polygonCrv})`,
-            },
-            withBody: (body) => {
-              vars.save("test5res", body);
-            },
-            expect: featuresMatch,
-            filter: () => true,
-          },
-          {
-            query: {
-              filter: `s_WithiN(${pointCrv4326}, ${polygonCrv4326})`,
-              "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
-            },
-            getExpected: () => vars.load("test5res").features,
-            expect: featuresMatch,
-            filter: null,
-          },
-          {
-            query: {
-              filter: `NoT s_WithiN(geometry,${polygonCrv})`,
-            },
-            withBody: (body) => {
-              vars.save("test7res", body);
-            },
-            expect: (body) =>
-              body.should.have.property("numberReturned").which.equals(12),
-            filter: null,
-          },
-          {
-            query: {
-              filter: `NoT s_WithiN(geometry,${polygonCrv4326})`,
-              "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
-            },
-            getExpected: () => vars.load("test7res").features,
-            expect: featuresMatch,
-            filter: null,
-          },
-        ];
-
-        for (const test of tests) {
-          it(qs.stringify(test.query, { encode: false }), () =>
-            //Data is selected using filter
-
-            api
-              .get("/daraa/collections/AeronauticCrv/items")
-              .query({ limit: LIMIT, ...test.query })
-
-              // Success and returns GeoJSON
-
-              .expect(200)
-              .expect(CONTENT_TYPE, GEO_JSON)
-
-              // Saves response if it is needed later
-
-              .expect((res) => {
-                if (test.withBody) {
-                  test.withBody(res.body);
-                }
-
-                // Either calls shouldIncludeId or featuresMatch
-
-                test.expect(res.body, test, vars.load(AeronauticFeatures));
-                test.additional
-                  ? test.additional(
-                      res.body,
-                      vars.load(AeronauticFeatures),
-                      vars.load("test1res")
-                    )
-                  : null;
               })
           );
         }
@@ -656,6 +365,297 @@ describe(
                       vars.load(TestDisjoint)
                     )
                   : null;
+              })
+          );
+        }
+      }
+    );
+    describe(
+      {
+        title: "s_touches",
+        description:
+          "Ensure that all queries involving operator **s_touches** work correctly. <br/>\
+      Collections: [Daraa - Aeronautic (Curves)](https://demo.ldproxy.net/daraa/collections/AeronauticCrv/items?f=html)",
+      },
+      () => {
+        const tests = [
+          {
+            query: { filter: `s_ToUcHeS(geometry,${pointCrv})` },
+            withBody: (body) => {
+              vars.save("test1res", body);
+            },
+            filter: (f) => f.id === idCrv,
+            expect: shouldIncludeId,
+            additional: (body) => {
+              body.should.have
+                .property("numberReturned")
+                .which.is.greaterThan(0);
+            },
+            additional1: (body) => {
+              body.should.have
+                .property("numberReturned")
+                .which.is.greaterThan(1);
+            },
+          },
+          {
+            query: {
+              filter: `s_ToUcHeS(geometry,${pointCrv4326})`,
+              "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
+            },
+            getExpected: () => vars.load("test1res").features,
+            filter: null,
+            expect: featuresMatch,
+          },
+          {
+            query: {
+              filter: `s_ToUcHeS(geometry,${polygonCrv})`,
+            },
+            withBody: (body) => {
+              vars.save("test3res", body);
+            },
+            filter: null,
+            expect: (body) =>
+              body.should.have.property("numberReturned").which.equals(0),
+          },
+          {
+            query: {
+              filter: `s_ToUcHeS(geometry,${polygonCrv4326})`,
+              "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
+            },
+            getExpected: () => vars.load("test3res").features,
+            filter: null,
+            expect: featuresMatch,
+          },
+          {
+            query: {
+              filter: `s_ToUcHeS(geometry, geometry)`,
+            },
+            filter: null,
+            expect: (body) =>
+              body.should.have.property("numberReturned").which.equals(0),
+          },
+        ];
+
+        for (const test of tests) {
+          it(qs.stringify(test.query, { encode: false }), () =>
+            //Data is selected using filter
+
+            api
+              .get("/daraa/collections/AeronauticCrv/items")
+              .query({ limit: LIMIT, ...test.query })
+
+              // Success and returns GeoJSON
+
+              .expect(200)
+              .expect(CONTENT_TYPE, GEO_JSON)
+
+              // Saves response if it is needed later
+
+              .expect((res) => {
+                if (test.withBody) {
+                  test.withBody(res.body);
+                }
+
+                // Either calls shouldIncludeId or featuresMatch
+
+                test.expect(res.body, test, vars.load(AeronauticFeatures));
+                test.additional ? test.additional(res.body) : null;
+                test.additional1 ? test.additional1(res.body) : null;
+              })
+          );
+        }
+      }
+    ),
+      describe(
+        {
+          title: "s_within",
+          description:
+            "Ensure that all queries involving operator **s_within** work correctly. <br/>\
+          Collections: [Daraa - Aeronautic (Curves)](https://demo.ldproxy.net/daraa/collections/AeronauticCrv/items?f=html)",
+        },
+        () => {
+          const tests = [
+            {
+              query: { filter: `s_WithiN(geometry,${polygonCrv})` },
+              withBody: (body) => {
+                vars.save("test1res", body);
+              },
+              filter: (f) => f.id === idCrv,
+              expect: shouldIncludeId,
+              additional: (body) => {
+                body.should.have
+                  .property("numberReturned")
+                  .which.is.greaterThan(0);
+              },
+            },
+            {
+              query: {
+                filter: `s_WithiN(geometry,${polygonCrv4326})`,
+                "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
+              },
+              getExpected: () => vars.load("test1res").features,
+              filter: null,
+              expect: featuresMatch,
+            },
+            {
+              query: { filter: `NoT s_WithiN(geometry,${polygonCrv})` },
+              withBody: (body) => {
+                vars.save("test3res", body);
+              },
+              filter: (f) => f.id === idCrv,
+              expect: shouldNotIncludeId,
+              additional: numberCheckSubtraction,
+            },
+            {
+              query: {
+                filter: `NoT s_WithiN(geometry,${polygonCrv4326})`,
+                "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
+              },
+              getExpected: () => vars.load("test3res").features,
+              expect: featuresMatch,
+              filter: null,
+            },
+            {
+              query: {
+                filter: `s_WithiN(${pointCrv}, ${polygonCrv})`,
+              },
+              withBody: (body) => {
+                vars.save("test5res", body);
+              },
+              expect: featuresMatch,
+              filter: () => true,
+            },
+            {
+              query: {
+                filter: `s_WithiN(${pointCrv4326}, ${polygonCrv4326})`,
+                "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
+              },
+              getExpected: () => vars.load("test5res").features,
+              expect: featuresMatch,
+              filter: null,
+            },
+            {
+              query: {
+                filter: `NoT s_WithiN(geometry,${polygonCrv})`,
+              },
+              withBody: (body) => {
+                vars.save("test7res", body);
+              },
+              expect: (body) =>
+                body.should.have.property("numberReturned").which.equals(12),
+              filter: null,
+            },
+            {
+              query: {
+                filter: `NoT s_WithiN(geometry,${polygonCrv4326})`,
+                "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
+              },
+              getExpected: () => vars.load("test7res").features,
+              expect: featuresMatch,
+              filter: null,
+            },
+          ];
+
+          for (const test of tests) {
+            it(qs.stringify(test.query, { encode: false }), () =>
+              //Data is selected using filter
+
+              api
+                .get("/daraa/collections/AeronauticCrv/items")
+                .query({ limit: LIMIT, ...test.query })
+
+                // Success and returns GeoJSON
+
+                .expect(200)
+                .expect(CONTENT_TYPE, GEO_JSON)
+
+                // Saves response if it is needed later
+
+                .expect((res) => {
+                  if (test.withBody) {
+                    test.withBody(res.body);
+                  }
+
+                  // Either calls shouldIncludeId or featuresMatch
+
+                  test.expect(res.body, test, vars.load(AeronauticFeatures));
+                  test.additional
+                    ? test.additional(
+                        res.body,
+                        vars.load(AeronauticFeatures),
+                        vars.load("test1res")
+                      )
+                    : null;
+                })
+            );
+          }
+        }
+      );
+    describe(
+      {
+        title: "s_overlaps",
+        description:
+          "Ensure that all queries involving operator **s_overlaps** work correctly. <br/>\
+          Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)",
+      },
+      () => {
+        const tests = [
+          {
+            query: {
+              filter: `s_OvErLaPs(geometry, ${pointPnt})`,
+            },
+            withBody: (body) => {
+              vars.save("test1res", body);
+            },
+            filter: null,
+            expect: (body) => {
+              body.should.have.property("numberReturned").which.equals(0);
+            },
+          },
+          {
+            query: {
+              filter: `s_OvErLaPs(geometry, ${pointPnt4326})`,
+              "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
+            },
+            getExpected: () => vars.load("test1res").features,
+            filter: null,
+            expect: featuresMatch,
+          },
+          {
+            query: {
+              filter: `s_OvErLaPs(geometry, geometry)`,
+            },
+            filter: null,
+            expect: (body) => {
+              body.should.have.property("numberReturned").which.equals(0);
+            },
+          },
+        ];
+
+        for (const test of tests) {
+          it(qs.stringify(test.query, { encode: false }), () =>
+            //Data is selected using filter
+
+            api
+              .get("/daraa/collections/CulturePnt/items")
+              .query({ limit: LIMIT, ...test.query })
+
+              // Success and returns GeoJSON
+
+              .expect(200)
+              .expect(CONTENT_TYPE, GEO_JSON)
+
+              // Saves response if it is needed later
+
+              .expect((res) => {
+                if (test.withBody) {
+                  test.withBody(res.body);
+                }
+
+                // Either calls shouldIncludeId or featuresMatch
+
+                test.expect(res.body, test, vars.load(CultureFeatures));
+                test.additional ? test.additional(res.body) : null;
               })
           );
         }
