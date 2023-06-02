@@ -13,10 +13,10 @@
     "test": "mocha"
   },
   "dependencies": {
-    "@catsjs/core": "^1.0.0-beta.8",
-    "@catsjs/http": "^1.0.0-beta.8",
-    "@catsjs/json": "^1.0.0-beta.8",
-    "@catsjs/report": "^1.0.0-beta.8",
+    "@catsjs/core": "^1.0.0-beta.9",
+    "@catsjs/http": "^1.0.0-beta.9",
+    "@catsjs/json": "^1.0.0-beta.9",
+    "@catsjs/report": "^1.0.0-beta.9",
     "chai": "^4.3.7",
     "mocha": "^10.2.0",
     "qs": "^6.11.2"

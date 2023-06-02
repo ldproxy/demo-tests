@@ -11,393 +11,395 @@ setup:
         save: allCulturePnt
 
 suites:
-  - title: eq-yml
-    description:
-      "Ensure that all queries involving operator **eqy** work correctly. <br/>
-      Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)"
-    vars:
-      filters:
-        - query:
-            filter: F_CODE=F_CODE
-          json: true
-        - query:
-            filter: F_CODE='AL030'
-          json: feature.properties.F_CODE == 'AL030'
-        - query:
-            filter: "'AL030'=F_CODE"
-          json: feature.properties.F_CODE == 'AL030'
-        - query:
-            F_CODE: AL030
-          json: feature.properties.F_CODE == 'AL030'
-        - query:
-            filter: ZI037_REL=11
-          json: feature.properties.ZI037_REL == 11
-        - query:
-            filter: "'A'='A'"
-          json: true
-        - query:
-            filter: '"F_CODE"=''AL030'''
-          json: feature.properties.F_CODE == "AL030"
-        - query:
-            filter: ZI001_SDV=TIMESTAMP('2011-12-26T20:55:27Z')
-          json: feature.properties.ZI001_SDV === "2011-12-26T20:55:27Z"
-    tests:
-      - foreach: filters
-        type: feature-query
-        collection: CulturePnt
-        query: ${query}
-        limit: *limit
-        assertions:
-          - status: 200
-          - content: application/geo+json
-          - type: feature-matcher
-            source: allCulturePnt
-            filter: ${json}
-  - title: neq-yml
-    description:
-      "Ensure that all queries involving operator **neq** work correctly. <br/>
-      Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)"
-    vars:
-      filters:
-        - query:
-            filter: F_CODE<>F_CODE
-          json: "false"
-        - query:
-            filter: F_CODE<>'AL030'
-          json: feature.properties.F_CODE !== "AL030"
-        - query:
-            filter: ZI037_REL<>11
-          json: typeof feature.properties.ZI037_REL === "number" && feature.properties.ZI037_REL !== 11
-        - query:
-            filter: ZI037_REL<>10
-          json: typeof feature.properties.ZI037_REL === "number" && feature.properties.ZI037_REL !== 10
-        - query:
-            filter: "'AL030'<>F_CODE"
-          json: feature.properties.F_CODE !== "AL030"
-        - query:
-            filter: "'A'<>'A'"
-          json: "false"
-        - query:
-            filter: ZI001_SDV<>TIMESTAMP('2011-12-26T20:55:27Z')
-          json: feature.properties.ZI001_SDV !== "2011-12-26T20:55:27Z"
-    tests:
-      - foreach: filters
-        type: feature-query
-        collection: CulturePnt
-        query: ${query}
-        limit: *limit
-        assertions:
-          - status: 200
-          - content: application/geo+json
-          - type: feature-matcher
-            source: allCulturePnt
-            filter: ${json}
-  - title: lt-yml
-    description:
-      "Ensure that all queries involving operator **lt** work correctly. <br/>
-      Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)"
-    vars:
-      filters:
-        - query:
-            filter: F_CODE<F_CODE
-          json: "false"
-        - query:
-            filter: F_CODE<'AL030'
-          json: feature.properties.F_CODE < "AL030"
-        - query:
-            filter: ZI037_REL<11
-          json: feature.properties.ZI037_REL < 11
-        - query:
-            filter: ZI037_REL<12
-          json: feature.properties.ZI037_REL < 12
-        - query:
-            filter: "'AL030'<F_CODE"
-          json: feature.properties.F_CODE > "AL030"
-        - query:
-            filter: "'A'<'A'"
-          json: "false"
-        - query:
-            filter: ZI001_SDV<TIMESTAMP('2011-12-26T20:55:27Z')
-          json: feature.properties.ZI001_SDV < "2011-12-26T20:55:27Z"
-    tests:
-      - foreach: filters
-        type: feature-query
-        collection: CulturePnt
-        query: ${query}
-        limit: *limit
-        assertions:
-          - status: 200
-          - content: application/geo+json
-          - type: feature-matcher
-            source: allCulturePnt
-            filter: ${json}
-  - title: gt-yml
-    description:
-      "Ensure that all queries involving operator **gt** work correctly. <br/>
-      Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)"
-    vars:
-      filters:
-        - query:
-            filter: F_CODE>F_CODE
-          json: feature.properties.F_CODE > "F_CODE"
-        - query:
-            filter: F_CODE>'AL030'
-          json: feature.properties.F_CODE > "AL030"
-        - query:
-            filter: ZI037_REL>11
-          json: feature.properties.ZI037_REL > 11
-        - query:
-            filter: ZI037_REL>0
-          json: feature.properties.ZI037_REL > 0
-        - query:
-            filter: "'AL030'>F_CODE"
-          json: feature.properties.F_CODE < "AL030"
-        - query:
-            filter: "'A'>'A'"
-          json: "false"
-        - query:
-            filter: ZI001_SDV>TIMESTAMP('2011-12-26T20:55:27Z')
-          json: feature.properties.ZI001_SDV > "2011-12-26T20:55:27Z"
-    tests:
-      - foreach: filters
-        type: feature-query
-        collection: CulturePnt
-        query: ${query}
-        limit: *limit
-        assertions:
-          - status: 200
-          - content: application/geo+json
-          - type: feature-matcher
-            source: allCulturePnt
-            filter: ${json}
-  - title: lteq-yml
-    description:
-      "Ensure that all queries involving operator **lteq** work correctly. <br/>
-      Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)"
-    vars:
-      filters:
-        - query:
-            filter: F_CODE<=F_CODE
-          json: feature.properties.F_CODE <= "F_CODE"
-        - query:
-            filter: F_CODE<='AL030'
-          json: feature.properties.F_CODE <= "AL030"
-        - query:
-            filter: ZI037_REL<=11
-          json: feature.properties.ZI037_REL <= 11
-        - query:
-            filter: ZI037_REL<=10
-          json: feature.properties.ZI037_REL <= 10
-        - query:
-            filter: "'AL030'<=F_CODE"
-          json: feature.properties.F_CODE >= "AL030"
-        - query:
-            filter: "'A'<='A'"
-          json: true
-        - query:
-            filter: ZI001_SDV<=TIMESTAMP('2011-12-26T20:55:27Z')
-          json: feature.properties.ZI001_SDV <= "2011-12-26T20:55:27Z"
-    tests:
-      - foreach: filters
-        type: feature-query
-        collection: CulturePnt
-        query: ${query}
-        limit: *limit
-        assertions:
-          - status: 200
-          - content: application/geo+json
-          - type: feature-matcher
-            source: allCulturePnt
-            filter: ${json}
-  - title: gteq-yml
-    description:
-      "Ensure that all queries involving operator **gteq** work correctly. <br/>
-      Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)"
-    vars:
-      filters:
-        - query:
-            filter: F_CODE>=F_CODE
-          json: true
-        - query:
-            filter: F_CODE>='AL030'
-          json: feature.properties.F_CODE >= "AL030"
-        - query:
-            filter: ZI037_REL>=11
-          json: feature.properties.ZI037_REL >= 11
-        - query:
-            filter: ZI037_REL>=10
-          json: feature.properties.ZI037_REL >= 10
-        - query:
-            filter: "'AL030'>=F_CODE"
-          json: feature.properties.F_CODE <= "AL030"
-        - query:
-            filter: "'A'>='A'"
-          json: true
-        - query:
-            filter: ZI001_SDV>=TIMESTAMP('2011-12-26T20:55:27Z')
-          json: feature.properties.ZI001_SDV >= "2011-12-26T20:55:27Z"
-    tests:
-      - foreach: filters
-        type: feature-query
-        collection: CulturePnt
-        query: ${query}
-        limit: *limit
-        assertions:
-          - status: 200
-          - content: application/geo+json
-          - type: feature-matcher
-            source: allCulturePnt
-            filter: ${json}
-  - title: like-yml
-    description:
-      "Ensure that all queries involving operator **like** work correctly. <br/>
-      Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)"
-    vars:
-      filters:
-        - query:
-            filter: F_CODE LiKe 'AL0%'
-          json: feature.properties.F_CODE.startsWith("AL0")
-        - query:
-            filter: F_CODE LiKe 'AL0__'
-          json: feature.properties.F_CODE.startsWith("AL0") &&
-            feature.properties.F_CODE.length === 5
-        - query:
-            filter: CASEI(F_CODE) LiKe casei('al0__')
-          json: feature.properties.F_CODE.match(/^AL0/i) &&
-            feature.properties.F_CODE.length === 5
-        - query:
-            filter: CASEI(F_CODE) LiKe casei('al0%')
-          json: feature.properties.F_CODE.match(/^AL0/i)
-        - query:
-            filter: F_CODE LiKe 'al0%'
-          json: feature.properties.F_CODE.startsWith("al0")
-        - query:
-            filter: F_CODE LiKe '%''%'
-          json: feature.properties.F_CODE.includes("'")
-    tests:
-      - foreach: filters
-        type: feature-query
-        collection: CulturePnt
-        query: ${query}
-        limit: *limit
-        assertions:
-          - status: 200
-          - content: application/geo+json
-          - type: feature-matcher
-            source: allCulturePnt
-            filter: ${json}
-  - title: between-yml
-    description:
-      "Ensure that all queries involving operator **between** work correctly. <br/>
-      Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)"
-    vars:
-      filters:
-        - query:
-            filter: ZI037_REL BeTweeN ZI037_REL AnD ZI037_REL
-          json: typeof feature.properties.ZI037_REL === "number" &&
-            feature.properties.ZI037_REL >= feature.properties.ZI037_REL &&
-            feature.properties.ZI037_REL <= feature.properties.ZI037_REL
+  - title: scalar operators yml
+    suites:
+      - title: eq-yml
+        description:
+          "Ensure that all queries involving operator **eq** work correctly. <br/>
+          Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)"
+        vars:
+          filters:
+            - query:
+                filter: F_CODE=F_CODE
+              json: true
+            - query:
+                filter: F_CODE='AL030'
+              json: feature.properties.F_CODE == 'AL030'
+            - query:
+                filter: "'AL030'=F_CODE"
+              json: feature.properties.F_CODE == 'AL030'
+            - query:
+                F_CODE: AL030
+              json: feature.properties.F_CODE == 'AL030'
+            - query:
+                filter: ZI037_REL=11
+              json: feature.properties.ZI037_REL == 11
+            - query:
+                filter: "'A'='A'"
+              json: true
+            - query:
+                filter: '"F_CODE"=''AL030'''
+              json: feature.properties.F_CODE == "AL030"
+            - query:
+                filter: ZI001_SDV=TIMESTAMP('2011-12-26T20:55:27Z')
+              json: feature.properties.ZI001_SDV === "2011-12-26T20:55:27Z"
+        tests:
+          - foreach: filters
+            type: feature-query
+            collection: CulturePnt
+            query: ${query}
+            limit: *limit
+            assertions:
+              - status: 200
+              - content: application/geo+json
+              - type: feature-matcher
+                source: allCulturePnt
+                filter: ${json}
+      - title: neq-yml
+        description:
+          "Ensure that all queries involving operator **neq** work correctly. <br/>
+          Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)"
+        vars:
+          filters:
+            - query:
+                filter: F_CODE<>F_CODE
+              json: "false"
+            - query:
+                filter: F_CODE<>'AL030'
+              json: feature.properties.F_CODE !== "AL030"
+            - query:
+                filter: ZI037_REL<>11
+              json: typeof feature.properties.ZI037_REL === "number" && feature.properties.ZI037_REL !== 11
+            - query:
+                filter: ZI037_REL<>10
+              json: typeof feature.properties.ZI037_REL === "number" && feature.properties.ZI037_REL !== 10
+            - query:
+                filter: "'AL030'<>F_CODE"
+              json: feature.properties.F_CODE !== "AL030"
+            - query:
+                filter: "'A'<>'A'"
+              json: "false"
+            - query:
+                filter: ZI001_SDV<>TIMESTAMP('2011-12-26T20:55:27Z')
+              json: feature.properties.ZI001_SDV !== "2011-12-26T20:55:27Z"
+        tests:
+          - foreach: filters
+            type: feature-query
+            collection: CulturePnt
+            query: ${query}
+            limit: *limit
+            assertions:
+              - status: 200
+              - content: application/geo+json
+              - type: feature-matcher
+                source: allCulturePnt
+                filter: ${json}
+      - title: lt-yml
+        description:
+          "Ensure that all queries involving operator **lt** work correctly. <br/>
+          Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)"
+        vars:
+          filters:
+            - query:
+                filter: F_CODE<F_CODE
+              json: "false"
+            - query:
+                filter: F_CODE<'AL030'
+              json: feature.properties.F_CODE < "AL030"
+            - query:
+                filter: ZI037_REL<11
+              json: feature.properties.ZI037_REL < 11
+            - query:
+                filter: ZI037_REL<12
+              json: feature.properties.ZI037_REL < 12
+            - query:
+                filter: "'AL030'<F_CODE"
+              json: feature.properties.F_CODE > "AL030"
+            - query:
+                filter: "'A'<'A'"
+              json: "false"
+            - query:
+                filter: ZI001_SDV<TIMESTAMP('2011-12-26T20:55:27Z')
+              json: feature.properties.ZI001_SDV < "2011-12-26T20:55:27Z"
+        tests:
+          - foreach: filters
+            type: feature-query
+            collection: CulturePnt
+            query: ${query}
+            limit: *limit
+            assertions:
+              - status: 200
+              - content: application/geo+json
+              - type: feature-matcher
+                source: allCulturePnt
+                filter: ${json}
+      - title: gt-yml
+        description:
+          "Ensure that all queries involving operator **gt** work correctly. <br/>
+          Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)"
+        vars:
+          filters:
+            - query:
+                filter: F_CODE>F_CODE
+              json: feature.properties.F_CODE > "F_CODE"
+            - query:
+                filter: F_CODE>'AL030'
+              json: feature.properties.F_CODE > "AL030"
+            - query:
+                filter: ZI037_REL>11
+              json: feature.properties.ZI037_REL > 11
+            - query:
+                filter: ZI037_REL>0
+              json: feature.properties.ZI037_REL > 0
+            - query:
+                filter: "'AL030'>F_CODE"
+              json: feature.properties.F_CODE < "AL030"
+            - query:
+                filter: "'A'>'A'"
+              json: "false"
+            - query:
+                filter: ZI001_SDV>TIMESTAMP('2011-12-26T20:55:27Z')
+              json: feature.properties.ZI001_SDV > "2011-12-26T20:55:27Z"
+        tests:
+          - foreach: filters
+            type: feature-query
+            collection: CulturePnt
+            query: ${query}
+            limit: *limit
+            assertions:
+              - status: 200
+              - content: application/geo+json
+              - type: feature-matcher
+                source: allCulturePnt
+                filter: ${json}
+      - title: lteq-yml
+        description:
+          "Ensure that all queries involving operator **lteq** work correctly. <br/>
+          Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)"
+        vars:
+          filters:
+            - query:
+                filter: F_CODE<=F_CODE
+              json: feature.properties.F_CODE <= "F_CODE"
+            - query:
+                filter: F_CODE<='AL030'
+              json: feature.properties.F_CODE <= "AL030"
+            - query:
+                filter: ZI037_REL<=11
+              json: feature.properties.ZI037_REL <= 11
+            - query:
+                filter: ZI037_REL<=10
+              json: feature.properties.ZI037_REL <= 10
+            - query:
+                filter: "'AL030'<=F_CODE"
+              json: feature.properties.F_CODE >= "AL030"
+            - query:
+                filter: "'A'<='A'"
+              json: true
+            - query:
+                filter: ZI001_SDV<=TIMESTAMP('2011-12-26T20:55:27Z')
+              json: feature.properties.ZI001_SDV <= "2011-12-26T20:55:27Z"
+        tests:
+          - foreach: filters
+            type: feature-query
+            collection: CulturePnt
+            query: ${query}
+            limit: *limit
+            assertions:
+              - status: 200
+              - content: application/geo+json
+              - type: feature-matcher
+                source: allCulturePnt
+                filter: ${json}
+      - title: gteq-yml
+        description:
+          "Ensure that all queries involving operator **gteq** work correctly. <br/>
+          Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)"
+        vars:
+          filters:
+            - query:
+                filter: F_CODE>=F_CODE
+              json: true
+            - query:
+                filter: F_CODE>='AL030'
+              json: feature.properties.F_CODE >= "AL030"
+            - query:
+                filter: ZI037_REL>=11
+              json: feature.properties.ZI037_REL >= 11
+            - query:
+                filter: ZI037_REL>=10
+              json: feature.properties.ZI037_REL >= 10
+            - query:
+                filter: "'AL030'>=F_CODE"
+              json: feature.properties.F_CODE <= "AL030"
+            - query:
+                filter: "'A'>='A'"
+              json: true
+            - query:
+                filter: ZI001_SDV>=TIMESTAMP('2011-12-26T20:55:27Z')
+              json: feature.properties.ZI001_SDV >= "2011-12-26T20:55:27Z"
+        tests:
+          - foreach: filters
+            type: feature-query
+            collection: CulturePnt
+            query: ${query}
+            limit: *limit
+            assertions:
+              - status: 200
+              - content: application/geo+json
+              - type: feature-matcher
+                source: allCulturePnt
+                filter: ${json}
+      - title: like-yml
+        description:
+          "Ensure that all queries involving operator **like** work correctly. <br/>
+          Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)"
+        vars:
+          filters:
+            - query:
+                filter: F_CODE LiKe 'AL0%'
+              json: feature.properties.F_CODE.startsWith("AL0")
+            - query:
+                filter: F_CODE LiKe 'AL0__'
+              json: feature.properties.F_CODE.startsWith("AL0") &&
+                feature.properties.F_CODE.length === 5
+            - query:
+                filter: CASEI(F_CODE) LiKe casei('al0__')
+              json: feature.properties.F_CODE.match(/^AL0/i) &&
+                feature.properties.F_CODE.length === 5
+            - query:
+                filter: CASEI(F_CODE) LiKe casei('al0%')
+              json: feature.properties.F_CODE.match(/^AL0/i)
+            - query:
+                filter: F_CODE LiKe 'al0%'
+              json: feature.properties.F_CODE.startsWith("al0")
+            - query:
+                filter: F_CODE LiKe '%''%'
+              json: feature.properties.F_CODE.includes("'")
+        tests:
+          - foreach: filters
+            type: feature-query
+            collection: CulturePnt
+            query: ${query}
+            limit: *limit
+            assertions:
+              - status: 200
+              - content: application/geo+json
+              - type: feature-matcher
+                source: allCulturePnt
+                filter: ${json}
+      - title: between-yml
+        description:
+          "Ensure that all queries involving operator **between** work correctly. <br/>
+          Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)"
+        vars:
+          filters:
+            - query:
+                filter: ZI037_REL BeTweeN ZI037_REL AnD ZI037_REL
+              json: typeof feature.properties.ZI037_REL === "number" &&
+                feature.properties.ZI037_REL >= feature.properties.ZI037_REL &&
+                feature.properties.ZI037_REL <= feature.properties.ZI037_REL
 
-        - query:
-            filter: ZI037_REL not BeTweeN ZI037_REL AnD ZI037_REL
-          json: "false"
-        - query:
-            filter: ZI037_REL BeTweeN 0 AnD 10
-          json: typeof feature.properties.ZI037_REL === "number" && feature.properties.ZI037_REL >= 0 && feature.properties.ZI037_REL <= 10
+            - query:
+                filter: ZI037_REL not BeTweeN ZI037_REL AnD ZI037_REL
+              json: "false"
+            - query:
+                filter: ZI037_REL BeTweeN 0 AnD 10
+              json: typeof feature.properties.ZI037_REL === "number" && feature.properties.ZI037_REL >= 0 && feature.properties.ZI037_REL <= 10
 
-        - query:
-            filter: ZI037_REL BeTweeN 0 AnD 11
-          json: typeof feature.properties.ZI037_REL === "number" && feature.properties.ZI037_REL >= 0 && feature.properties.ZI037_REL <= 11
+            - query:
+                filter: ZI037_REL BeTweeN 0 AnD 11
+              json: typeof feature.properties.ZI037_REL === "number" && feature.properties.ZI037_REL >= 0 && feature.properties.ZI037_REL <= 11
 
-        - query:
-            filter: ZI037_REL NoT BeTweeN 0 AnD 10
-          json: "typeof feature.properties.ZI037_REL === 'number' &&
-            !(feature.properties.ZI037_REL >= 0 && feature.properties.ZI037_REL <= 10)"
+            - query:
+                filter: ZI037_REL NoT BeTweeN 0 AnD 10
+              json: "typeof feature.properties.ZI037_REL === 'number' &&
+                !(feature.properties.ZI037_REL >= 0 && feature.properties.ZI037_REL <= 10)"
 
-        - query:
-            filter: ZI037_REL NoT BeTweeN 0 AnD 11
-          json: "typeof feature.properties.ZI037_REL === 'number' &&
-            !(feature.properties.ZI037_REL >= 0 && feature.properties.ZI037_REL <= 11)"
+            - query:
+                filter: ZI037_REL NoT BeTweeN 0 AnD 11
+              json: "typeof feature.properties.ZI037_REL === 'number' &&
+                !(feature.properties.ZI037_REL >= 0 && feature.properties.ZI037_REL <= 11)"
 
-        - query:
-            filter: 6 BeTweeN 0 AnD ZI037_REL
-          json: typeof feature.properties.ZI037_REL === "number" && feature.properties.ZI037_REL >= 6;
+            - query:
+                filter: 6 BeTweeN 0 AnD ZI037_REL
+              json: typeof feature.properties.ZI037_REL === "number" && feature.properties.ZI037_REL >= 6;
 
-    tests:
-      - foreach: filters
-        type: feature-query
-        collection: CulturePnt
-        query: ${query}
-        limit: *limit
-        assertions:
-          - status: 200
-          - content: application/geo+json
-          - type: feature-matcher
-            source: allCulturePnt
-            filter: ${json}
-  - title: in-yml
-    description:
-      "Ensure that all queries involving operator **in** work correctly. <br/>
-      Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)"
-    vars:
-      filters:
-        - query:
-            filter: CASEI(F_CODE) iN (CASEI('AL030'), CASEI('AL012'))
-          json: feature.properties.F_CODE.toLowerCase() === "al012" || feature.properties.F_CODE.toLowerCase() === "al030";
+        tests:
+          - foreach: filters
+            type: feature-query
+            collection: CulturePnt
+            query: ${query}
+            limit: *limit
+            assertions:
+              - status: 200
+              - content: application/geo+json
+              - type: feature-matcher
+                source: allCulturePnt
+                filter: ${json}
+      - title: in-yml
+        description:
+          "Ensure that all queries involving operator **in** work correctly. <br/>
+          Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)"
+        vars:
+          filters:
+            - query:
+                filter: CASEI(F_CODE) iN (CASEI('AL030'), CASEI('AL012'))
+              json: feature.properties.F_CODE.toLowerCase() === "al012" || feature.properties.F_CODE.toLowerCase() === "al030";
 
-        - query:
-            filter: F_CODE NoT iN ('AL030', 'AL012')
-          json: feature.properties.F_CODE !== "AL012" && feature.properties.F_CODE !== "AL030";
-        - query:
-            filter: ZI037_REL iN (11, 12)
-          json: feature.properties.ZI037_REL !== undefined &&
-            (feature.properties.ZI037_REL === 11 || feature.properties.ZI037_REL === 12)
+            - query:
+                filter: F_CODE NoT iN ('AL030', 'AL012')
+              json: feature.properties.F_CODE !== "AL012" && feature.properties.F_CODE !== "AL030";
+            - query:
+                filter: ZI037_REL iN (11, 12)
+              json: feature.properties.ZI037_REL !== undefined &&
+                (feature.properties.ZI037_REL === 11 || feature.properties.ZI037_REL === 12)
 
-        - query:
-            filter: ZI037_REL not iN (11, 12)
-          json: feature.properties.ZI037_REL !== undefined &&
-            !(feature.properties.ZI037_REL === 11 || feature.properties.ZI037_REL === 12)
+            - query:
+                filter: ZI037_REL not iN (11, 12)
+              json: feature.properties.ZI037_REL !== undefined &&
+                !(feature.properties.ZI037_REL === 11 || feature.properties.ZI037_REL === 12)
 
-        - query:
-            filter: ZI001_SDV IN (TIMESTAMP('2011-12-26T20:55:27Z'),TIMESTAMP('2021-10-10T10:10:10Z'),TIMESTAMP('2011-12-27T18:39:59Z'))
-          json: feature.properties.ZI001_SDV === "2011-12-26T20:55:27Z" ||
-            feature.properties.ZI001_SDV === "2021-10-10T10:10:10Z" ||
-            feature.properties.ZI001_SDV === "2011-12-27T18:39:59Z"
+            - query:
+                filter: ZI001_SDV IN (TIMESTAMP('2011-12-26T20:55:27Z'),TIMESTAMP('2021-10-10T10:10:10Z'),TIMESTAMP('2011-12-27T18:39:59Z'))
+              json: feature.properties.ZI001_SDV === "2011-12-26T20:55:27Z" ||
+                feature.properties.ZI001_SDV === "2021-10-10T10:10:10Z" ||
+                feature.properties.ZI001_SDV === "2011-12-27T18:39:59Z"
 
-    tests:
-      - foreach: filters
-        type: feature-query
-        collection: CulturePnt
-        query: ${query}
-        limit: *limit
-        assertions:
-          - status: 200
-          - content: application/geo+json
-          - type: feature-matcher
-            source: allCulturePnt
-            filter: ${json}
-  - title: null-yml
-    description:
-      "Ensure that all queries involving operator **null** work correctly. <br/>
-      Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)"
-    vars:
-      filters:
-        - query:
-            filter: ZI037_REL iS NulL
-          json: feature.properties.ZI037_REL === undefined
+        tests:
+          - foreach: filters
+            type: feature-query
+            collection: CulturePnt
+            query: ${query}
+            limit: *limit
+            assertions:
+              - status: 200
+              - content: application/geo+json
+              - type: feature-matcher
+                source: allCulturePnt
+                filter: ${json}
+      - title: null-yml
+        description:
+          "Ensure that all queries involving operator **null** work correctly. <br/>
+          Collections: [Daraa - Cultural Points](https://demo.ldproxy.net/daraa/collections/CulturePnt/items?f=html)"
+        vars:
+          filters:
+            - query:
+                filter: ZI037_REL iS NulL
+              json: feature.properties.ZI037_REL === undefined
 
-        - query:
-            filter: ZI037_REL iS not NulL
-          json: feature.properties.ZI037_REL !== undefined
-    tests:
-      - foreach: filters
-        type: feature-query
-        collection: CulturePnt
-        query: ${query}
-        limit: *limit
-        assertions:
-          - status: 200
-          - content: application/geo+json
-          - type: feature-matcher
-            source: allCulturePnt
-            filter: ${json}
+            - query:
+                filter: ZI037_REL iS not NulL
+              json: feature.properties.ZI037_REL !== undefined
+        tests:
+          - foreach: filters
+            type: feature-query
+            collection: CulturePnt
+            query: ${query}
+            limit: *limit
+            assertions:
+              - status: 200
+              - content: application/geo+json
+              - type: feature-matcher
+                source: allCulturePnt
+                filter: ${json}
