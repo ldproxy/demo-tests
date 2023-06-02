@@ -6,6 +6,8 @@ protocol:
     accept: "application/geo+json, application/problem+json;q=0.8"
 contentTypes:
   - "@catsjs/json"
+dslPlugins:
+  - "plugins/filter"
 verbose: false
 report:
   dir: ../reports
