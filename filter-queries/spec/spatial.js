@@ -29,7 +29,7 @@ await setup("fetch AeronauticCrv Collection", async () =>
     .expect((res) => {
       vars.save(
         ENVELOPE_COLLECTION,
-        `ENVELOPE(${res.body.extent.spatial.bbox[0].join(",")})`
+        `BBOX(${res.body.extent.spatial.bbox[0].join(",")})`
       );
     })
 );
@@ -69,8 +69,8 @@ const polygonCrv4326 = `POLYGON((${latCrv} ${lonCrv - delta}, ${
   latCrv + delta
 } ${lonCrv}, ${latCrv} ${lonCrv - delta}))`;
 // prettier-ignore
-const envelopeCrv = `ENVELOPE(${lonCrv - delta},${latCrv - delta},${lonCrv + delta},${latCrv + delta})`;
-const envelopeCrv4326 = `ENVELOPE(${latCrv - delta},${lonCrv - delta},${
+const envelopeCrv = `BBOX(${lonCrv - delta},${latCrv - delta},${lonCrv + delta},${latCrv + delta})`;
+const envelopeCrv4326 = `BBOX(${latCrv - delta},${lonCrv - delta},${
   latCrv + delta
 },${lonCrv + delta})`;
 const lonPnt =
@@ -235,7 +235,7 @@ describe(
           },
           {
             query: {
-              filter: `s_EqualS(geometry, ${pointPnt})`,
+              filter: `NoT s_EqualS(geometry, ${pointPnt})`,
             },
             withBody: (body) => {
               vars.save("test3res", body);
@@ -250,7 +250,7 @@ describe(
           },
           {
             query: {
-              filter: `s_EqualS(geometry, ${pointPnt4326})`,
+              filter: `NoT s_EqualS(geometry, ${pointPnt4326})`,
               "filter-crs": "http://www.opengis.net/def/crs/EPSG/0/4326",
             },
             getExpected: () => vars.load("test3res").features,
